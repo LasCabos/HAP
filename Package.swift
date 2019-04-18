@@ -16,12 +16,14 @@ let package = Package(
         .package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.21"),
         .package(url: "https://github.com/crossroadlabs/Regex.git", from: "1.1.0"),
         .package(url: "https://github.com/apple/swift-nio.git", from: "1.11.0"),
+        .package(url: "https://github.com/uraimo/SwiftyGPIO.git", from: "1.0.0"),
+        .package(url: "https://github.com/uraimo/WS281x.swift.git", from: "2.0.0"),
     ],
     targets: [
         .target(name: "CQRCode"),
         .target(name: "COperatingSystem"),
         .target(name: "HTTP", dependencies: ["NIO", "NIOHTTP1", "NIOFoundationCompat", "COperatingSystem"]),
-        .target(name: "HAP", dependencies: ["SRP", "Cryptor", "Evergreen", "HKDF", "Regex", "CQRCode", "HTTP"]),
+        .target(name: "HAP", dependencies: ["SRP", "Cryptor", "Evergreen", "HKDF", "Regex", "CQRCode", "HTTP","SwiftyGPIO","WS281x"]),
         .target(name: "hap-server", dependencies: ["HAP", "Evergreen"]),
         .testTarget(name: "HAPTests", dependencies: ["HAP"]),
     ]
