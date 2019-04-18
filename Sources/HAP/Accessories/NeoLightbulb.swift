@@ -1,4 +1,8 @@
 // swiftlint:disable nesting
+import Foundation
+import WS281x
+import SwiftyGPIO
+
 extension Accessory {
     open class NeoLightbulb: Accessory {
         
@@ -20,14 +24,29 @@ extension Accessory {
             case multi
         }
         
-        private let neoLightBulb: Service.NeoLightbulb
-        private var colorMode: ColorMode
+        private let neoLightBulb: Service.NeoLightbulb!
+        private var colorMode: ColorMode!
+        //private var gpio: GPIO!
+        //private var supportedBoard: SupportedBoard!
+        private var numLEDs: Int!
+        private var ws281x: WS281x!
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
                     additionalServices: [Service] = [],
-                    type: ColorType = .monochrome,
-                    isDimmable: Bool = false) {
+                    boardType: SupportedBoard,
+                    numberOfLEDs: Int,
+                    type: ColorType = .color,
+                    isDimmable: Bool = true)
+        {
+            
+            self.numLEDs = numberOfLEDs
+            
+            let pwms = SwiftyGPIO.hardwarePWMs(for: boardType)!
+            let gpio = (pwms[0]?[.P18])!
+            self.ws281x = WS281x(gpio, type: .WS2812B, numElements: self.numLEDs)
+            
+            
             
             
             neoLightBulb = Service.NeoLightbulb(type: type, isDimmable: isDimmable)
