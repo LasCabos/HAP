@@ -1,6 +1,7 @@
 import Foundation
 import func Evergreen.getLogger
 import HAP
+import SwiftyGPIO
 
 fileprivate let logger = getLogger("demo")
 
@@ -23,13 +24,16 @@ if CommandLine.arguments.contains("--recreate") {
 let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
 
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "WorkPC", serialNumber: "00004"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 144)
+
 let device = Device(
     bridgeInfo: Service.Info(name: "Bridge", serialNumber: "00001"),
     setupCode: "123-44-321",
     storage: storage,
     accessories: [
         livingRoomLightbulb,
-        bedroomNightStand
+        bedroomNightStand,
+        neoLightbulb
 //        Accessory.Door(info: Service.Info(name: "Front Door", serialNumber: "00005")),
 //        Accessory.Switch(info: Service.Info(name: "Garden Lights", serialNumber: "00006")),
 //        Accessory.Thermostat(info: Service.Info(name: "Living Room Thermostat", serialNumber: "00007")),

@@ -61,7 +61,7 @@ extension Accessory {
                 return self.neoLightBulb.hue?.value
             }
             set {
-                // TODO: - ADD GPIO Code
+                // TODO: - ADD Code To change hue
                 self.neoLightBulb.hue?.value = newValue
             }
         }
@@ -71,7 +71,17 @@ extension Accessory {
                 return self.neoLightBulb.saturation?.value
             }
             set {
+                // TODO: - Add Code to change Saturation
                 self.neoLightBulb.saturation?.value = newValue
+            }
+        }
+        
+        public var brightness: Int? {
+            get {
+                return self.neoLightBulb.brightness?.value
+            }
+            set {
+                self.neoLightBulb.brightness?.value = newValue
             }
         }
         
@@ -91,13 +101,14 @@ extension Accessory {
         
         // MARK: - Utility functions to change color of lights
         private func ChangeDeviceState(state:Int) -> Bool{
-            if(state < 0){print("Invalid State: \(state)"); return false}
+            
             
             if(state == 0){
-                self.gpio.value = 0
+                self.SetAllPixelsTo(color: NeoColor.black, shouldWait: true)
             }
             else{
-                self.gpio.value = 1
+                //TODO: - Set to previous color
+                self.SetAllPixelsTo(color: NeoColor.red, shouldWait: true)
             }
             
             return true
@@ -108,7 +119,7 @@ extension Accessory {
         /// - Parameters:
         ///   - color: the color to change the pixels to
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
-        private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool, honorDeviceState: Bool){
+        private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
             
             func ChangePixelColors(color:NeoColor, shouldWait:Bool){
                 print("SetColor: \(color.CombinedUInt32)")
@@ -118,14 +129,14 @@ extension Accessory {
                 if(shouldWait){ws281x.wait()} // Blocking
             }
             
-            if(honorDeviceState){
-                if(self.state == 1){
-                    ChangePixelColors(color: color, shouldWait: shouldWait)
-                }
-            }
-            else{
-                ChangePixelColors(color: color, shouldWait: shouldWait)
-            }
+//            if(honorDeviceState){
+//                if(self.state == 1){
+//                    ChangePixelColors(color: color, shouldWait: shouldWait)
+//                }
+//            }
+//            else{
+//                ChangePixelColors(color: color, shouldWait: shouldWait)
+//            }
         }
         
 //        // MARK: Cycle Colors
