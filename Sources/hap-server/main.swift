@@ -24,7 +24,7 @@ if CommandLine.arguments.contains("--recreate") {
 let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
 
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "WorkPC", serialNumber: "00004"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 144)
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "WorkPC", serialNumber: "00004"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 60)
 
 let device = Device(
     bridgeInfo: Service.Info(name: "Bridge", serialNumber: "00001"),
@@ -61,7 +61,30 @@ class MyDeviceDelegate: DeviceDelegate {
             + "in service \(service.type) "
             + "of accessory \(accessory.info.name.value ?? "") "
             + "did change: \(String(describing: newValue))")
-    }
+        
+        logger.info("I should change my color here")
+        
+        if(accessory.serialNumber == "00004"){
+            
+            if(characteristic.description! == "Hue"){
+                neoLightbulb.hue = newValue as! Float
+            }
+            
+            if(characteristic.description! == "Saturation"){
+                neoLightbulb.saturation = newValue as! Float
+            }
+            
+            if(characteristic.description! == "Brightness"){
+                neoLightbulb.brightness == newValue as! Int
+            }
+            
+            if(characteristic.description! == "Power State"){
+                neoLightbulb.state = newValue as! Bool
+            }
+            
+            logger.info("Something: \(characteristic.description)")
+            }
+        }
 
     func characteristicListenerDidSubscribe(_ accessory: Accessory,
                                             service: Service,
@@ -100,12 +123,12 @@ signal(SIGTERM) { _ in stop() }
 print("Initializing the server...")
 
 // Switch the lights every 5 seconds.
-let timer = DispatchSource.makeTimerSource()
-timer.schedule(deadline: .now() + .seconds(1), repeating: .seconds(5))
-timer.setEventHandler(handler: {
-    livingRoomLightbulb.lightbulb.powerState.value = !(livingRoomLightbulb.lightbulb.powerState.value ?? false)
-})
-timer.resume()
+//let timer = DispatchSource.makeTimerSource()
+//timer.schedule(deadline: .now() + .seconds(1), repeating: .seconds(5))
+//timer.setEventHandler(handler: {
+//    livingRoomLightbulb.lightbulb.powerState.value = !(livingRoomLightbulb.lightbulb.powerState.value ?? false)
+//})
+//timer.resume()
 
 print()
 print("Scan the following QR code using your iPhone to pair this device:")

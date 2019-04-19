@@ -24,7 +24,7 @@ extension Accessory {
             case multi
         }
         
-        private let neoLightBulb: Service.NeoLightbulb!
+        private let neoLightBulbService: Service.NeoLightbulbService!
         private var colorMode: ColorMode!
         //private var gpio: GPIO!
         //private var supportedBoard: SupportedBoard!
@@ -45,52 +45,53 @@ extension Accessory {
             let pwms = SwiftyGPIO.hardwarePWMs(for: boardType)!
             let gpio = (pwms[0]?[.P18])!
             self.ws281x = WS281x(gpio, type: .WS2812B, numElements: self.numLEDs)
-            
-            
-            
-            
-            neoLightBulb = Service.NeoLightbulb(type: type, isDimmable: isDimmable)
+
+            neoLightBulbService = Service.NeoLightbulbService(type: type, isDimmable: isDimmable)
             colorMode = .single
-            super.init(info: info, type: .lightbulb, services: [neoLightBulb] + additionalServices)
+            super.init(info: info, type: .lightbulb, services: [neoLightBulbService] + additionalServices)
         }
         
         
         // MARK: - Return Functions
         public var hue: Float? {
             get {
-                return self.neoLightBulb.hue?.value
+                return self.neoLightBulbService.hue?.value
             }
             set {
-                // TODO: - ADD Code To change hue
-                self.neoLightBulb.hue?.value = newValue
+                self.neoLightBulbService.hue?.value = newValue
+                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
             }
         }
         
         public var saturation: Float? {
             get {
-                return self.neoLightBulb.saturation?.value
+                return self.neoLightBulbService.saturation?.value
             }
             set {
                 // TODO: - Add Code to change Saturation
-                self.neoLightBulb.saturation?.value = newValue
+                self.neoLightBulbService.saturation?.value = newValue
+                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
             }
         }
         
         public var brightness: Int? {
             get {
-                return self.neoLightBulb.brightness?.value
+                return self.neoLightBulbService.brightness?.value
             }
             set {
-                self.neoLightBulb.brightness?.value = newValue
+                self.neoLightBulbService.brightness?.value = newValue
+                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
             }
         }
         
         public var state: Bool? {
             get {
-                return self.neoLightBulb.powerState.value
+                return self.neoLightBulbService.powerState.value
             }
             set {
-                self.neoLightBulb.powerState.value = newValue
+                self.neoLightBulbService.powerState.value = newValue
+                ChangeDeviceState(state: newValue)
+                
             }
         }
         
@@ -100,15 +101,19 @@ extension Accessory {
         
         
         // MARK: - Utility functions to change color of lights
-        private func ChangeDeviceState(state:Int) -> Bool{
-            
-            
-            if(state == 0){
-                self.SetAllPixelsTo(color: NeoColor.black, shouldWait: true)
+        private var currentColor: NeoColor{
+            get{
+                return NeoColor(degrees: self.hue!, percent: self.saturation, percent: self.brightness)
+                return NeoColor(hue: self.hue!, saturation: self.saturation! / 100, brightness: Float(self.brightness! / 100))
+            }
+        }
+        
+        private func ChangeDeviceState(state:Bool){
+            if(state){
+                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
             }
             else{
-                //TODO: - Set to previous color
-                self.SetAllPixelsTo(color: NeoColor.red, shouldWait: true)
+                self.SetAllPixelsTo(color: NeoColor.black, shouldWait: true)
             }
             
             return true
@@ -121,6 +126,7 @@ extension Accessory {
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
             
+            print("SetAllPixelsTo")
             func ChangePixelColors(color:NeoColor, shouldWait:Bool){
                 print("SetColor: \(color.CombinedUInt32)")
                 let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
@@ -128,6 +134,11 @@ extension Accessory {
                 ws281x.start()
                 if(shouldWait){ws281x.wait()} // Blocking
             }
+            
+            print("Here")
+            color.PrintRGBandHSV()
+            color.PrintRGBandHSV(label: "Print Color: ")
+            ChangePixelColors(color: color, shouldWait: shouldWait)
             
 //            if(honorDeviceState){
 //                if(self.state == 1){
@@ -186,7 +197,7 @@ extension Accessory {
 }
 
 extension Service {
-    open class NeoLightbulb: LightbulbBase {
+    open class NeoLightbulbService: LightbulbBase {
         
         public init(type: Accessory.NeoLightbulb.ColorType, isDimmable: Bool) {
             var characteristics: [AnyCharacteristic] = []
@@ -229,8 +240,6 @@ extension NeoColor{
     }
 }
 
-import Foundation
-
 // MARK: - Classes
 public class NeoColor:Equatable{
     
@@ -259,12 +268,12 @@ public class NeoColor:Equatable{
     }
     
     
-    private var m_redComponent:Float    = 0
-    private var m_greenComponent:Float  = 0
-    private var m_blueComponenet:Float  = 0
-    private var m_hue:Float             = 0
-    private var m_saturation:Float      = 0
-    private var m_brightness:Float      = 0
+    private var m_redComponent:Float    = 0 // 0 - 1
+    private var m_greenComponent:Float  = 0 // 0 - 1
+    private var m_blueComponenet:Float  = 0 // 0 - 1
+    private var m_hue:Float             = 0 // 0 - 360
+    private var m_saturation:Float      = 0 // 0 - 1
+    private var m_brightness:Float      = 0 // 0 - 1
     
     // Values 0.0-1.0
     init(red: Float, green: Float, blue: Float) {
@@ -280,7 +289,32 @@ public class NeoColor:Equatable{
         m_brightness = hsv.v
     }
     
-    // Values between H:0-360 S:0-1 V:0-1
+    
+    /// Creates NeoColor from Hue (0-360) Sat(0-100) Brightness(0-100) using percentages
+    ///
+    /// - Parameters:
+    ///   - hue: 0-360
+    ///   - sat: 0-100
+    ///   - brightness: 0-100
+    init(degrees hue: Float, percent sat: Float, percent brightness: Float){
+        m_hue = hue
+        m_saturation = saturation / 100
+        m_brightness = brightness / 100
+        
+        let hsv = HSV(h: hue, s: saturation, v: brightness)
+        let rgb = hsv.rgb
+        
+        m_redComponent      = rgb.r
+        m_greenComponent    = rgb.g
+        m_blueComponenet    = rgb.b
+    }
+    
+    /// Creates NeoColor from Hue(0-360) Sat(0-1) Brightness(0-1)
+    ///
+    /// - Parameters:
+    ///   - hue: 0-360
+    ///   - saturation: 0-1
+    ///   - brightness: 0-1
     init(hue: Float, saturation: Float, brightness: Float)
     {
         m_hue = hue
