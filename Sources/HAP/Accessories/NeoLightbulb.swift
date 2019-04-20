@@ -49,6 +49,10 @@ extension Accessory {
             neoLightBulbService = Service.NeoLightbulbService(type: type, isDimmable: isDimmable)
             colorMode = .single
             super.init(info: info, type: .lightbulb, services: [neoLightBulbService] + additionalServices)
+            
+            self.hue = 360
+            self.saturation = 100
+            self.brightness = 100
         }
         
         
@@ -68,7 +72,6 @@ extension Accessory {
                 return self.neoLightBulbService.saturation?.value
             }
             set {
-                // TODO: - Add Code to change Saturation
                 self.neoLightBulbService.saturation?.value = newValue
                 self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
             }
@@ -90,7 +93,7 @@ extension Accessory {
             }
             set {
                 self.neoLightBulbService.powerState.value = newValue
-                ChangeDeviceState(state: newValue)
+                ChangeDeviceState(state: newValue!)
                 
             }
         }
@@ -103,8 +106,7 @@ extension Accessory {
         // MARK: - Utility functions to change color of lights
         private var currentColor: NeoColor{
             get{
-                return NeoColor(degrees: self.hue!, percent: self.saturation, percent: self.brightness)
-                return NeoColor(hue: self.hue!, saturation: self.saturation! / 100, brightness: Float(self.brightness! / 100))
+                return NeoColor(degrees: self.hue!, percent: self.saturation!, percent: Float(self.brightness!))
             }
         }
         
@@ -115,8 +117,6 @@ extension Accessory {
             else{
                 self.SetAllPixelsTo(color: NeoColor.black, shouldWait: true)
             }
-            
-            return true
         }
         
         /// Sets all the pixels of the device to a color
@@ -126,7 +126,6 @@ extension Accessory {
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
             
-            print("SetAllPixelsTo")
             func ChangePixelColors(color:NeoColor, shouldWait:Bool){
                 print("SetColor: \(color.CombinedUInt32)")
                 let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
@@ -135,9 +134,6 @@ extension Accessory {
                 if(shouldWait){ws281x.wait()} // Blocking
             }
             
-            print("Here")
-            color.PrintRGBandHSV()
-            color.PrintRGBandHSV(label: "Print Color: ")
             ChangePixelColors(color: color, shouldWait: shouldWait)
             
 //            if(honorDeviceState){
@@ -296,12 +292,13 @@ public class NeoColor:Equatable{
     ///   - hue: 0-360
     ///   - sat: 0-100
     ///   - brightness: 0-100
-    init(degrees hue: Float, percent sat: Float, percent brightness: Float){
+    init(degrees hue: Float, percent saturation: Float, percent brightness: Float){
+        
         m_hue = hue
         m_saturation = saturation / 100
         m_brightness = brightness / 100
         
-        let hsv = HSV(h: hue, s: saturation, v: brightness)
+        let hsv = HSV(h: m_hue, s: m_saturation, v: m_brightness)
         let rgb = hsv.rgb
         
         m_redComponent      = rgb.r
