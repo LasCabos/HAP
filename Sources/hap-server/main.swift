@@ -24,7 +24,7 @@ if CommandLine.arguments.contains("--recreate") {
 //let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 //let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
 
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "WorkPC", serialNumber: "00001"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 60)
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "WorkPC", serialNumber: "00002"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 60)
 
 let device = Device(
     bridgeInfo: Service.Info(name: "Bridge", serialNumber: "00001"),

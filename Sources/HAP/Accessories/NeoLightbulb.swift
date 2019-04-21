@@ -61,6 +61,7 @@ extension Accessory {
                 return self.neoLightBulbService.hue?.value
             }
             set {
+                print("Hue")
                 self.neoLightBulbService.hue?.value = newValue
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -71,6 +72,7 @@ extension Accessory {
                 return self.neoLightBulbService.saturation?.value
             }
             set {
+                print("Sat")
                 self.neoLightBulbService.saturation?.value = newValue
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -81,6 +83,7 @@ extension Accessory {
                 return self.neoLightBulbService.brightness?.value
             }
             set {
+                print("Brightness")
                 self.neoLightBulbService.brightness?.value = newValue
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -91,6 +94,7 @@ extension Accessory {
                 return self.neoLightBulbService.powerState.value
             }
             set {
+                print("State")
                 self.neoLightBulbService.powerState.value = newValue
                 ChangeDeviceState(state: newValue!)
                 
@@ -122,6 +126,7 @@ extension Accessory {
         /// Manages color change if should be single or multi
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
+            print("ColorChange")
             let previousColorChangeDate = self.lastColorChangeDate
             let newColorChangeDate = Date()
             let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
