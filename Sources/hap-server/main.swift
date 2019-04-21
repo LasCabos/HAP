@@ -61,9 +61,7 @@ class MyDeviceDelegate: DeviceDelegate {
             + "in service \(service.type) "
             + "of accessory \(accessory.info.name.value ?? "") "
             + "did change: \(String(describing: newValue))")
-        
-        logger.info("I should change my color here")
-        
+                
         if(accessory.serialNumber == "00004"){
             
             if(characteristic.description! == "Hue"){
@@ -81,10 +79,8 @@ class MyDeviceDelegate: DeviceDelegate {
             if(characteristic.description! == "Power State"){
                 neoLightbulb.state = newValue as! Bool
             }
-            
-            logger.info("Something: \(characteristic.description)")
-            }
         }
+    }
 
     func characteristicListenerDidSubscribe(_ accessory: Accessory,
                                             service: Service,

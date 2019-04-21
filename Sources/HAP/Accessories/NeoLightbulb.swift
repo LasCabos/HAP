@@ -26,10 +26,9 @@ extension Accessory {
         
         private let neoLightBulbService: Service.NeoLightbulbService!
         private var colorMode: ColorMode!
-        //private var gpio: GPIO!
-        //private var supportedBoard: SupportedBoard!
         private var numLEDs: Int!
         private var ws281x: WS281x!
+        private var lastColorChangeDate = Date()
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
@@ -63,7 +62,7 @@ extension Accessory {
             }
             set {
                 self.neoLightBulbService.hue?.value = newValue
-                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
         
@@ -73,7 +72,7 @@ extension Accessory {
             }
             set {
                 self.neoLightBulbService.saturation?.value = newValue
-                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
         
@@ -83,7 +82,7 @@ extension Accessory {
             }
             set {
                 self.neoLightBulbService.brightness?.value = newValue
-                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
         
@@ -112,12 +111,35 @@ extension Accessory {
         
         private func ChangeDeviceState(state:Bool){
             if(state){
-                self.SetAllPixelsTo(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
             else{
-                self.SetAllPixelsTo(color: NeoColor.black, shouldWait: true)
+                self.ApplyColorChange(color: NeoColor.black, shouldWait: true)
             }
         }
+        
+        
+        /// Manages color change if should be single or multi
+        private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
+            
+            let previousColorChangeDate = self.lastColorChangeDate
+            let newColorChangeDate = Date()
+            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
+            self.lastColorChangeDate = newColorChangeDate
+            
+            // 2 - 5 seconds between color changes will result in a multicolor
+            if( 2 < deltaTime || deltaTime > 5 ){
+                //Single Color
+                print("Single Color")
+                self.SetAllPixelsTo(color: color, shouldWait: shouldWait)
+            }
+            else{
+                // Multi Color
+                print("Multi Color - Disabled - setting single color")
+                self.SetAllPixelsTo(color: color, shouldWait: shouldWait)
+            }
+        }
+        
         
         /// Sets all the pixels of the device to a color
         ///
@@ -126,24 +148,12 @@ extension Accessory {
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
             
-            func ChangePixelColors(color:NeoColor, shouldWait:Bool){
-                print("SetColor: \(color.CombinedUInt32)")
-                let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
-                self.ws281x.setLeds(initial)
-                ws281x.start()
-                if(shouldWait){ws281x.wait()} // Blocking
-            }
-            
-            ChangePixelColors(color: color, shouldWait: shouldWait)
-            
-//            if(honorDeviceState){
-//                if(self.state == 1){
-//                    ChangePixelColors(color: color, shouldWait: shouldWait)
-//                }
-//            }
-//            else{
-//                ChangePixelColors(color: color, shouldWait: shouldWait)
-//            }
+            self.lastColorChangeDate = Date()
+            print("SetColor: \(color.CombinedUInt32)")
+            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
+            self.ws281x.setLeds(initial)
+            ws281x.start()
+            if(shouldWait){ws281x.wait()} // Blocking
         }
         
 //        // MARK: Cycle Colors
