@@ -68,10 +68,9 @@ extension Accessory {
                 print("Hue")
                 self.neoLightBulbService.hue?.value = newValue
                 
-                previous4Colors.removeFirst()
-                previous4Colors.append(currentColor)
-                print("IsCycle: \(ValidateColorCycle())")
-
+                UpdatePreviousColorArray(withNewColor: self.currentColor)
+                ValidateColorCycle()
+                print("ColorMode: \(self.colorMode)")
                 
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -95,6 +94,23 @@ extension Accessory {
             set {
                 print("Brightness")
                 self.neoLightBulbService.brightness?.value = newValue
+                
+                UpdatePreviousColorArray(withNewColor: self.currentColor)
+                
+                for color in previous4Colors{
+                    color.PrintRGBandHSV(label: "Before:")
+                }
+                
+                for color in previous4Colors
+                {
+                    color.hsv.v = self.currentColor.hsv.v
+                }
+                
+                for color in previous4Colors{
+                    color.PrintRGBandHSV(label: "After")
+                }
+                
+                
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
@@ -137,15 +153,8 @@ extension Accessory {
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
             print("ColorChange")
-            let previousColorChangeDate = self.lastColorChangeDate
-            let newColorChangeDate = Date()
-            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
-            self.lastColorChangeDate = newColorChangeDate
-            
-            
-            
-            // 2 - 5 seconds between color changes will result in a multicolor
-            if( 2 < deltaTime || deltaTime > 5 ){
+
+            if( self.colorMode == .single ){
                 //Single Color
                 print("Single Color")
                 self.SetAllPixelsTo(color: color, shouldWait: shouldWait)
@@ -217,16 +226,20 @@ extension Accessory {
         
         /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
         /// enters color1, color2, color1, color2. The cycle should begin
-        private func ValidateColorCycle() -> Bool
+        private func ValidateColorCycle()
         {
-            print("----VALIDATE----")
-            for item in previous4Colors
+            if(previous4Colors[0] == previous4Colors[2] &&
+                previous4Colors[1] == previous4Colors[3])
             {
-                item.PrintRGBandHSV()
+                self.colorMode = .multi
             }
-            print("---- END ----")
-            return (previous4Colors[0] == previous4Colors[2] &&
-            previous4Colors[1] == previous4Colors[3]) ? true : false
+            else{self.colorMode = .single}
+        }
+        
+        private func UpdatePreviousColorArray(withNewColor: NeoColor)
+        {
+            self.previous4Colors.removeFirst()
+            self.previous4Colors.append(color)
         }
         
 //        // MARK: Cycle Colors
