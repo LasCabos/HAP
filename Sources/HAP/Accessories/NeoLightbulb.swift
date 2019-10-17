@@ -32,6 +32,7 @@ extension Accessory {
         
         private var temp_count = 0
         private var cycleColorTimer: Timer?
+        private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
@@ -130,10 +131,12 @@ extension Accessory {
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
             print("ColorChange")
-            let previousColorChangeDate = self.lastColorChangeDate
-            let newColorChangeDate = Date()
-            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
-            self.lastColorChangeDate = newColorChangeDate
+//            let previousColorChangeDate = self.lastColorChangeDate
+//            let newColorChangeDate = Date()
+//            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
+//            self.lastColorChangeDate = newColorChangeDate
+            
+            
             
             // 2 - 5 seconds between color changes will result in a multicolor
             if( 2 < deltaTime || deltaTime > 5 ){
@@ -156,25 +159,62 @@ extension Accessory {
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
   
-            CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
+           // CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
             
-//            self.lastColorChangeDate = Date()
-//            print("SetColor: \(color.CombinedUInt32)")
-//            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
-//            self.ws281x.setLeds(initial)
-//            ws281x.start()
-//            if(shouldWait){ws281x.wait()} // Blocking
+            self.lastColorChangeDate = Date()
+            print("SetColor: \(color.CombinedUInt32)")
+            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
+            self.ws281x.setLeds(initial)
+            ws281x.start()
+            if(shouldWait){ws281x.wait()} // Blocking
         }
         
         private func CycleColors(color1: NeoColor, color2: NeoColor)
         {
-            if(self.cycleColorTimer == nil)
+            
+            
+        }
+        
+        private func StartCycleColorTimer(withTimeInterval: TimeInterval)
+        {
+            // Lambda
+            func RunTimer(withInterval: TimeInterval)
             {
-                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (Timer) in
+                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: intervalSeconds, repeats: true, block: { (Timer) in
                     print("CycleColor: \(self.temp_count)")
                     self.temp_count += 1
                 })
             }
+            
+            if(self.cycleColorTimer == nil)
+            {
+                RunTimer(withInterval: withTimeInterval)
+            }
+            else
+            {
+                StopCycleColorTimer()
+                RunTimer(withInterval: withTimeInterval)
+            }
+        }
+        
+        private func StopCycleColorTimer()
+        {
+            if(self.cycleColorTimer == nil) {return}
+            if(self.cycleColorTimer!.isValid)
+            {
+                self.cycleColorTimer!.invalidate()
+                self.cycleColorTimer! = nil
+                print("Invalidated Timer")
+            }
+        }
+        
+        
+        /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
+        /// enters color1, color2, color1, color2. The cycle should begin
+        private func ValidateColorCycle() -> Bool
+        {
+            return (previous4Colors[0] == previous4Colors[2] &&
+            previous4Colors[1] == previous4Colors[3]) ? true : false
         }
         
 //        // MARK: Cycle Colors

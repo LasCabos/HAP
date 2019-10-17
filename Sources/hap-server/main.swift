@@ -62,6 +62,7 @@ class MyDeviceDelegate: DeviceDelegate {
                 
         if(accessory.serialNumber == "00002"){
             
+            print("Main.swift: Characteristic Description: \(characteristic.description!)")
             if(characteristic.description! == "Hue"){
                 neoLightbulb.hue = newValue as! Float
             }
