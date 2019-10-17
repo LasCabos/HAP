@@ -104,7 +104,7 @@ extension Accessory {
                 for i in 0..<previous4Colors.count
                 {
                     let oldColor = previous4Colors[i]
-                    let newColor = NeoColor(hue: oldColor.hsv.h, saturation: oldColor.hsv.s, brightness: Float(self.brightness!))
+                    let newColor = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
                     previous4Colors[i] = newColor
                 }
                 
@@ -138,7 +138,7 @@ extension Accessory {
         private var currentColor: NeoColor{
             get{
                 print("Return Color")
-                return NeoColor(hue: Float(self.hue!), saturation: Float(self.saturation!), brightness: Float(self.brightness!))
+                return NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness))
             }
         }
         
