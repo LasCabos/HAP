@@ -78,6 +78,10 @@ extension Accessory {
             set {
                 print("Sat")
                 self.neoLightBulbService.saturation?.value = newValue
+                previous4Colors.removeFirst()
+                previous4Colors.append(currentColor)
+                print("IsCycle: \(ValidateColorCycle())")
+                
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
