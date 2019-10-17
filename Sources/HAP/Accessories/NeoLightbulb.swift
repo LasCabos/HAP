@@ -137,8 +137,9 @@ extension Accessory {
         // MARK: - Utility functions to change color of lights
         private var currentColor: NeoColor{
             get{
-                print("Return Color")
-                return NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness))
+                let color = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
+                color.PrintRGBandHSV(label: "CurrentColor")
+                return
             }
         }
         
