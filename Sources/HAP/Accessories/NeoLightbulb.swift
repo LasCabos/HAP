@@ -97,22 +97,14 @@ extension Accessory {
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
                 
-                for color in previous4Colors{
-                    color.PrintRGBandHSV(label: "Before:")
-                }
-                
+                // Adjust brightness for array of 4 colors
                 for i in 0..<previous4Colors.count
                 {
                     let oldColor = previous4Colors[i]
                     let newColor = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
                     previous4Colors[i] = newColor
                 }
-                
-                for color in previous4Colors{
-                    color.PrintRGBandHSV(label: "After")
-                }
-                
-                
+
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
@@ -148,7 +140,8 @@ extension Accessory {
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
             else{
-                self.ApplyColorChange(color: NeoColor.black, shouldWait: true)
+                StopCycleColorTimer()
+                self.SetAllPixelsToSingle(color: NeoColor.black, shouldWait: true)
             }
         }
         
@@ -161,12 +154,14 @@ extension Accessory {
             if( self.colorMode == .single ){
                 //Single Color
                 print("Single Color")
-                self.SetAllPixelsTo(color: color, shouldWait: shouldWait)
+                self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
+                self.StopCycleColorTimer()
             }
             else{
                 // Multi Color
                 print("Multi Color - Disabled - setting single color")
-                self.SetAllPixelsTo(color: color, shouldWait: shouldWait)
+                self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
+                self.StartCycleColorTimer(withTimeInterval: 1)
             }
         }
         
@@ -176,7 +171,7 @@ extension Accessory {
         /// - Parameters:
         ///   - color: the color to change the pixels to
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
-        private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
+        private func SetAllPixelsToSingle(color: NeoColor, shouldWait: Bool){
   
            // CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
             print("Here")
