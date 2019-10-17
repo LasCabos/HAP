@@ -103,7 +103,8 @@ extension Accessory {
                 
                 for color in previous4Colors
                 {
-                    color.hsv.v = self.currentColor.hsv.v
+                    let newColor = NeoColor(hue: color.hsv.h, saturation: color.hsv.v, brightness: self.currentColor.hsv.v)
+                    color = newColor
                 }
                 
                 for color in previous4Colors{
