@@ -104,7 +104,7 @@ extension Accessory {
                 for i in 0..<previous4Colors.count
                 {
                     let oldColor = previous4Colors[i]
-                    let newColor = NeoColor(hue: oldColor.hsv.h, saturation: oldColor.hsv.s, brightness: Float(self.brightness))
+                    let newColor = NeoColor(hue: oldColor.hsv.h, saturation: oldColor.hsv.s, brightness: Float(self.brightness!))
                     previous4Colors[i] = newColor
                 }
                 
