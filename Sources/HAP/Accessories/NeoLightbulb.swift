@@ -239,7 +239,7 @@ extension Accessory {
         private func UpdatePreviousColorArray(withNewColor: NeoColor)
         {
             self.previous4Colors.removeFirst()
-            self.previous4Colors.append(color)
+            self.previous4Colors.append(withNewColor)
         }
         
 //        // MARK: Cycle Colors
