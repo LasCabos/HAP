@@ -180,7 +180,7 @@ extension Accessory {
             // Lambda
             func RunTimer(withInterval: TimeInterval)
             {
-                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: intervalSeconds, repeats: true, block: { (Timer) in
+                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
                     print("CycleColor: \(self.temp_count)")
                     self.temp_count += 1
                 })
