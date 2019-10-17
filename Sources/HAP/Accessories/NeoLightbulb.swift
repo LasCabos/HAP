@@ -101,6 +101,13 @@ extension Accessory {
                     color.PrintRGBandHSV(label: "Before:")
                 }
                 
+                for i in 0..<previous4Colors.count
+                {
+                    let oldColor = previous4Colors[i]
+                    let newColor = NeoColor(hue: oldColor.hsv.h, saturation: oldColor.hsv.s, brightness: Float(self.brightness))
+                    previous4Colors[i] = newColor
+                }
+                
                 for color in previous4Colors
                 {
                     let newColor = NeoColor(hue: color.hsv.h, saturation: color.hsv.v, brightness: self.currentColor.hsv.v)
