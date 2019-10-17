@@ -131,10 +131,10 @@ extension Accessory {
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
             print("ColorChange")
-//            let previousColorChangeDate = self.lastColorChangeDate
-//            let newColorChangeDate = Date()
-//            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
-//            self.lastColorChangeDate = newColorChangeDate
+            let previousColorChangeDate = self.lastColorChangeDate
+            let newColorChangeDate = Date()
+            let deltaTime = newColorChangeDate.timeIntervalSinceReferenceDate - previousColorChangeDate.timeIntervalSinceReferenceDate
+            self.lastColorChangeDate = newColorChangeDate
             
             
             
