@@ -137,6 +137,7 @@ extension Accessory {
         // MARK: - Utility functions to change color of lights
         private var currentColor: NeoColor{
             get{
+                print("Return Color")
                 return NeoColor(hue: Float(self.hue!), saturation: Float(self.saturation!), brightness: Float(self.brightness!))
             }
         }
@@ -177,7 +178,7 @@ extension Accessory {
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
   
            // CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
-            
+            print("Here")
             self.lastColorChangeDate = Date()
             print("SetColor: \(color.CombinedUInt32)")
             let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
