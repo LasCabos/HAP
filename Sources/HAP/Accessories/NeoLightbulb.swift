@@ -155,13 +155,15 @@ extension Accessory {
         ///   - color: the color to change the pixels to
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsTo(color: NeoColor, shouldWait: Bool){
+  
+            CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
             
-            self.lastColorChangeDate = Date()
-            print("SetColor: \(color.CombinedUInt32)")
-            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
-            self.ws281x.setLeds(initial)
-            ws281x.start()
-            if(shouldWait){ws281x.wait()} // Blocking
+//            self.lastColorChangeDate = Date()
+//            print("SetColor: \(color.CombinedUInt32)")
+//            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
+//            self.ws281x.setLeds(initial)
+//            ws281x.start()
+//            if(shouldWait){ws281x.wait()} // Blocking
         }
         
         private func CycleColors(color1: NeoColor, color2: NeoColor)
