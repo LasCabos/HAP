@@ -72,6 +72,7 @@ class MyDeviceDelegate: DeviceDelegate {
             }
             
             if(characteristic.description! == "Brightness"){
+                print("I am Brightness")
                 neoLightbulb.brightness == newValue as! Int
             }
             

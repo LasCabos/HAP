@@ -87,7 +87,7 @@ extension Accessory {
                 return self.neoLightBulbService.brightness?.value
             }
             set {
-                print("Brightness")
+                print("Brightness being set in NeiLightBulb")
                 self.neoLightBulbService.brightness?.value = newValue
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
