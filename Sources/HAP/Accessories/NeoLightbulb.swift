@@ -203,7 +203,7 @@ extension Accessory {
             if(self.cycleColorTimer!.isValid)
             {
                 self.cycleColorTimer!.invalidate()
-                self.cycleColorTimer! = nil
+                self.cycleColorTimer = nil
                 print("Invalidated Timer")
             }
         }
