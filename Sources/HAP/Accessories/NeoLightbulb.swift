@@ -219,6 +219,12 @@ extension Accessory {
         /// enters color1, color2, color1, color2. The cycle should begin
         private func ValidateColorCycle() -> Bool
         {
+            print("----VALIDATE----")
+            for item in previous4Colors
+            {
+                item.PrintRGBandHSV()
+            }
+            print("---- END ----")
             return (previous4Colors[0] == previous4Colors[2] &&
             previous4Colors[1] == previous4Colors[3]) ? true : false
         }
