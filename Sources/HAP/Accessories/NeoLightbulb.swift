@@ -30,6 +30,9 @@ extension Accessory {
         private var ws281x: WS281x!
         private var lastColorChangeDate = Date()
         
+        private var temp_count = 0
+        private var cycleColorTimer: Timer?
+        
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
                     additionalServices: [Service] = [],
@@ -159,6 +162,17 @@ extension Accessory {
             self.ws281x.setLeds(initial)
             ws281x.start()
             if(shouldWait){ws281x.wait()} // Blocking
+        }
+        
+        private func CycleColors(color1: NeoColor, color2: NeoColor)
+        {
+            if(self.cycleColorTimer == nil)
+            {
+                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (Timer) in
+                    print("CycleColor: \(self.temp_count)")
+                    self.temp_count += 1
+                })
+            }
         }
         
 //        // MARK: Cycle Colors
