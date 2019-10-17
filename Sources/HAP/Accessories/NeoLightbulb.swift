@@ -137,7 +137,7 @@ extension Accessory {
         // MARK: - Utility functions to change color of lights
         private var currentColor: NeoColor{
             get{
-                return NeoColor(degrees: self.hue!, percent: self.saturation!, percent: Float(self.brightness!))
+                return NeoColor(hue: Float(self.hue!), saturation: Float(self.saturation!), brightness: Float(self.brightness!))
             }
         }
         
