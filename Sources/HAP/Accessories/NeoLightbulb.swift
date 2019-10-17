@@ -139,7 +139,7 @@ extension Accessory {
             get{
                 let color = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
                 color.PrintRGBandHSV(label: "CurrentColor")
-                return
+                return color
             }
         }
         
