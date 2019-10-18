@@ -226,10 +226,6 @@ extension Accessory {
             let incColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             var colorIncrimenterCounter =  NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             
-            startColor.PrintRGBandHSV(label: "Start Color")
-            endColor.PrintRGBandHSV(label: "End Color")
-            cycleColor.PrintRGBandHSV(label: "Cycle Color")
-            
             // Lambda
             func RunTimer(withInterval: TimeInterval)
             {
@@ -242,6 +238,8 @@ extension Accessory {
                     
                     self.SetAllPixelsToSingle(color: cycleColor, shouldWait: true)
                     
+                    cycleColor.PrintRGBandHSV(label: "CycleColor")
+                    endColor.PrintRGBandHSV(label: "EndColor")
                     
                     if(cycleColor == endColor){
                         print("Switch / Swap Color Direction")
