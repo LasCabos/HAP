@@ -215,16 +215,19 @@ extension Accessory {
             var cycleColor  = color1
             var startColor  = color1
             var endColor    = color2
+            
+            startColor.PrintRGBandHSV(label: "StartColor")
+            endColor.PrintRGBandHSV(label: "EndColor")
 
             let fullTransitionInSeconds:Double = 30.0//60.0 * 5.0 // 5Min
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
             func CalculateIncrimentalColor(startColor: NeoColor, endColor: NeoColor) -> NeoColor
             {
-                let deltaColor = startColor - endColor
-                let hueInc = abs(deltaColor!.hsv.h / Float(totalRefreshCount))
-                let satInc = abs(deltaColor!.hsv.s / Float(totalRefreshCount))
-                let brightInc = abs(deltaColor!.hsv.v / Float(totalRefreshCount))
+                let deltaColor = endColor - startColor
+                let hueInc = (deltaColor!.hsv.h / Float(totalRefreshCount))
+                let satInc = (deltaColor!.hsv.s / Float(totalRefreshCount))
+                let brightInc = (deltaColor!.hsv.v / Float(totalRefreshCount))
                 
                 print("HueInc: \(hueInc)")
                 print("SatInc: \(satInc)")
