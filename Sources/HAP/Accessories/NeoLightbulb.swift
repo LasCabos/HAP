@@ -226,15 +226,19 @@ extension Accessory {
             let incColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             var colorIncrimenterCounter =  NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             
+            startColor.PrintRGBandHSV(label: "Start Color")
+            endColor.PrintRGBandHSV(label: "End Color")
+            cycleColor.PrintRGBandHSV(label: "Cycle Color")
+            
             // Lambda
             func RunTimer(withInterval: TimeInterval)
             {
                 cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
-                    
-                    colorIncrimenterCounter.PrintRGBandHSV(label: "Incrimenting By:")
-                    
+                                        
                     cycleColor = (self.currentColor - colorIncrimenterCounter)!
-                    colorIncrimenterCounter = (colorIncrimenterCounter + incColor)!
+                    colorIncrimenterCounter = (colorIncrimenterCounter + incColor)! // We keep adding our incColor (1 -Step) at a time
+                    
+                    colorIncrimenterCounter.PrintRGBandHSV(label: "Inc color")
                     
                     self.SetAllPixelsToSingle(color: cycleColor, shouldWait: true)
                     
@@ -242,7 +246,7 @@ extension Accessory {
                     if(cycleColor == endColor){
                         print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
-                        colorIncrimenterCounter = incColor
+                        colorIncrimenterCounter = incColor //Reset the incrimental color
                     }
                 })
             }
