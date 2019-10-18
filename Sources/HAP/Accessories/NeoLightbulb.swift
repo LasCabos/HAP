@@ -30,7 +30,6 @@ extension Accessory {
         private var ws281x: WS281x!
         private var lastColorChangeDate = Date()
         
-        private var temp_count = 0
         private var cycleColorTimer: Timer?
         private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
         
@@ -83,7 +82,7 @@ extension Accessory {
             set {
                 print("Sat")
                 self.neoLightBulbService.saturation?.value = newValue
-                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
+                //self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
         
@@ -100,7 +99,6 @@ extension Accessory {
                 // Adjust brightness for array of 4 colors
                 for i in 0..<previous4Colors.count
                 {
-                    let oldColor = previous4Colors[i]
                     let newColor = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
                     previous4Colors[i] = newColor
                 }
@@ -140,7 +138,7 @@ extension Accessory {
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
             else{
-                StopCycleColorTimer()
+                StopCycleColor()
                 self.SetAllPixelsToSingle(color: NeoColor.black, shouldWait: true)
             }
         }
@@ -154,14 +152,14 @@ extension Accessory {
             if( self.colorMode == .single ){
                 //Single Color
                 print("Single Color")
+                self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
-                self.StopCycleColorTimer()
             }
             else{
                 // Multi Color
-                print("Multi Color - Disabled - setting single color")
+                print("Multi Color - Apply Color Change")
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
-                self.StartCycleColorTimer(withTimeInterval: 1)
+                self.StartCycleColor(color1: previous4Colors[2], color2: previous4Colors[3], withTimeInterval: 1)
             }
         }
         
@@ -173,8 +171,6 @@ extension Accessory {
         ///   - shouldWait: (blocking) if we should wait for all pixels to be set
         private func SetAllPixelsToSingle(color: NeoColor, shouldWait: Bool){
   
-           // CycleColors(color1: NeoColor.red, color2: NeoColor.blue)
-            print("Here")
             self.lastColorChangeDate = Date()
             print("SetColor: \(color.CombinedUInt32)")
             let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
@@ -183,35 +179,7 @@ extension Accessory {
             if(shouldWait){ws281x.wait()} // Blocking
         }
         
-        private func CycleColors(color1: NeoColor, color2: NeoColor)
-        {
-            
-            
-        }
-        
-        private func StartCycleColorTimer(withTimeInterval: TimeInterval)
-        {
-            // Lambda
-            func RunTimer(withInterval: TimeInterval)
-            {
-                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
-                    print("CycleColor: \(self.temp_count)")
-                    self.temp_count += 1
-                })
-            }
-            
-            if(self.cycleColorTimer == nil)
-            {
-                RunTimer(withInterval: withTimeInterval)
-            }
-            else
-            {
-                StopCycleColorTimer()
-                RunTimer(withInterval: withTimeInterval)
-            }
-        }
-        
-        private func StopCycleColorTimer()
+        private func StopCycleColor()
         {
             if(self.cycleColorTimer == nil) {return}
             if(self.cycleColorTimer!.isValid)
@@ -221,7 +189,6 @@ extension Accessory {
                 print("Invalidated Timer")
             }
         }
-        
         
         /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
         /// enters color1, color2, color1, color2. The cycle should begin
@@ -240,6 +207,56 @@ extension Accessory {
             self.previous4Colors.removeFirst()
             self.previous4Colors.append(withNewColor)
         }
+        
+        private func StartCycleColor(color1: NeoColor, color2: NeoColor, withTimeInterval: TimeInterval)
+        {
+            // Required Calcs
+            var cycleColor  = color1
+            var startColor  = color1
+            var endColor    = color2
+
+            let fullTransitionInSeconds:Double = 60.0 * 5.0 // 5Min
+            let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
+            
+            let deltaColor = startColor - endColor
+            let hueInc = deltaColor!.hsv.h / Float(totalRefreshCount)
+            let satInc = deltaColor!.hsv.s / Float(totalRefreshCount)
+            let brightInc = deltaColor!.hsv.v / Float(totalRefreshCount)
+            let incColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
+            var colorIncrimenterCounter =  NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
+            
+            // Lambda
+            func RunTimer(withInterval: TimeInterval)
+            {
+                cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
+                    
+                    colorIncrimenterCounter.PrintRGBandHSV(label: "Incrimenting By:")
+                    
+                    cycleColor = (self.currentColor - colorIncrimenterCounter)!
+                    colorIncrimenterCounter = (colorIncrimenterCounter + incColor)!
+                    
+                    self.SetAllPixelsToSingle(color: cycleColor, shouldWait: true)
+                    
+                    
+                    if(cycleColor == endColor){
+                        swap(&startColor, &endColor)
+                    }
+                })
+            }
+            
+            
+            if(self.cycleColorTimer == nil)
+            {
+                RunTimer(withInterval: withTimeInterval)
+            }
+            else
+            {
+                StopCycleColor()
+                RunTimer(withInterval: withTimeInterval)
+            }
+        }
+        
+        
         
 //        // MARK: Cycle Colors
 //        // This needs to be in an event loop somehow
