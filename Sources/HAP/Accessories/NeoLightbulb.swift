@@ -240,7 +240,9 @@ extension Accessory {
                     
                     
                     if(cycleColor == endColor){
+                        print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
+                        colorIncrimenterCounter = incColor
                     }
                 })
             }
