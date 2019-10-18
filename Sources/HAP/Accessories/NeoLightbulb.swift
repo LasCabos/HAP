@@ -219,17 +219,22 @@ extension Accessory {
             let fullTransitionInSeconds:Double = 30.0//60.0 * 5.0 // 5Min
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
-            let deltaColor = startColor - endColor
-            let hueInc = deltaColor!.hsv.h / Float(totalRefreshCount)
-            let satInc = deltaColor!.hsv.s / Float(totalRefreshCount)
-            let brightInc = deltaColor!.hsv.v / Float(totalRefreshCount)
+            func CalculateIncrimentalColor(startColor: NeoColor, endColor: NeoColor) -> NeoColor
+            {
+                let deltaColor = startColor - endColor
+                let hueInc = abs(deltaColor!.hsv.h / Float(totalRefreshCount))
+                let satInc = abs(deltaColor!.hsv.s / Float(totalRefreshCount))
+                let brightInc = abs(deltaColor!.hsv.v / Float(totalRefreshCount))
+                
+                print("HueInc: \(hueInc)")
+                print("SatInc: \(satInc)")
+                print("BrighInc: \(brightInc)")
+                
+                return NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
+            }
             
-            print("HueInc: \(hueInc)")
-            print("SatInc: \(satInc)")
-            print("BrighInc: \(brightInc)")
-            
-            let incColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
-            var colorIncrimenterCounter =  NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
+            var incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
+            var colorIncrimenterCounter =  CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
             
             // Lambda
             func RunTimer(withInterval: TimeInterval)
@@ -249,7 +254,8 @@ extension Accessory {
                     if(cycleColor == endColor){
                         print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
-                        colorIncrimenterCounter = incColor //Reset the incrimental color
+                        incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
+                        colorIncrimenterCounter = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
                     }
                 })
             }
