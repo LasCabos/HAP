@@ -244,7 +244,7 @@ extension Accessory {
             {
                 cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
                                         
-                    cycleColor = (startColor - colorIncrimenterCounter)!
+                    cycleColor = (startColor + colorIncrimenterCounter)!
                     colorIncrimenterCounter = (colorIncrimenterCounter + incColor)! // We keep adding our incColor (1 -Step) at a time
                     
                     colorIncrimenterCounter.PrintRGBandHSV(label: "Inc color")
