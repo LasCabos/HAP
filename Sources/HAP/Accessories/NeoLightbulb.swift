@@ -69,7 +69,6 @@ extension Accessory {
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
                 ValidateColorCycle()
-                print("ColorMode: \(self.colorMode)")
                 
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -200,6 +199,8 @@ extension Accessory {
                 self.colorMode = .multi
             }
             else{self.colorMode = .single}
+            
+            print("Validating ColorMode: \((self.colorMode == .single) ? "Single" : "Multi" )")
         }
         
         private func UpdatePreviousColorArray(withNewColor: NeoColor)
@@ -215,7 +216,7 @@ extension Accessory {
             var startColor  = color1
             var endColor    = color2
 
-            let fullTransitionInSeconds:Double = 60.0 * 5.0 // 5Min
+            let fullTransitionInSeconds:Double = 30.0//60.0 * 5.0 // 5Min
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
             let deltaColor = startColor - endColor
