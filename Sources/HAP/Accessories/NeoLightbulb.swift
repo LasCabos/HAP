@@ -223,6 +223,11 @@ extension Accessory {
             let hueInc = deltaColor!.hsv.h / Float(totalRefreshCount)
             let satInc = deltaColor!.hsv.s / Float(totalRefreshCount)
             let brightInc = deltaColor!.hsv.v / Float(totalRefreshCount)
+            
+            print("HueInc: \(hueInc)")
+            print("SatInc: \(satInc)")
+            print("BrighInc: \(brightInc)")
+            
             let incColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             var colorIncrimenterCounter =  NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             
