@@ -219,7 +219,7 @@ extension Accessory {
             startColor.PrintRGBandHSV(label: "StartColor")
             endColor.PrintRGBandHSV(label: "EndColor")
 
-            let fullTransitionInSeconds:Double = 30.0//60.0 * 5.0 // 5Min
+            let fullTransitionInSeconds:Double = 60.0 * 5.0 // 5Min
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
             func CalculateIncrimentalColor(startColor: NeoColor, endColor: NeoColor) -> NeoColor
