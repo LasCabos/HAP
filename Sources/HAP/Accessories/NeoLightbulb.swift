@@ -93,10 +93,10 @@ extension Accessory {
             set {
                 print("Brightness")
                 self.neoLightBulbService.brightness?.value = newValue
-                
-                UpdatePreviousColorArray(withNewColor: self.currentColor)
-                
+                                
                 // Adjust brightness for array of 4 colors
+                // The color has not changed only brightness so we just need to adjust all the colors
+                // brigtness values stored in our array.
                 for i in 0..<previous4Colors.count
                 {
                     let newColor = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
@@ -146,10 +146,7 @@ extension Accessory {
         /// Manages color change if should be single or multi
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
-            //print("ColorChange")
-
             if( self.colorMode == .single ){
-                //Single Color
                 print("Single Color")
                 self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
