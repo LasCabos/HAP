@@ -256,7 +256,7 @@ extension Accessory {
             }
             
             var incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount)
-            var colorIncrimenterCounter =  CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
+            var colorIncrimentSummation =  CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount)
             
             
             /// Lambda - This is the time that runs to change the color
@@ -266,8 +266,8 @@ extension Accessory {
             {
                 cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
                                         
-                    newCycleColor = (startColor + colorIncrimenterCounter)!
-                    colorIncrimenterCounter = (colorIncrimenterCounter + incColor)! // We keep adding our incColor (1 -Step) at a time
+                    newCycleColor = (startColor + colorIncrimentSummation)!
+                    colorIncrimentSummation = (colorIncrimentSummation + incColor)! // We keep adding our incColor (1 -Step) at a time to the start color resulting in a new step color each iteration
                     
                     self.SetAllPixelsToSingle(color: newCycleColor, shouldWait: true)
                     
@@ -280,8 +280,8 @@ extension Accessory {
                     if(newCycleColor == endColor){
                         print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
-                        incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
-                        colorIncrimenterCounter = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
+                        incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount) // Recalc in the reverse Direction
+                        colorIncrimentSummation = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount) // Reset our colorIncrementSummation bact to start
                     }
                 })
             }
