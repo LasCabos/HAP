@@ -127,7 +127,6 @@ extension Accessory {
         private var currentColor: NeoColor{
             get{
                 let color = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
-                color.PrintRGBandHSV(label: "CurrentColor")
                 return color
             }
         }
@@ -146,7 +145,7 @@ extension Accessory {
         /// Manages color change if should be single or multi
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
-            print("ColorChange")
+            //print("ColorChange")
 
             if( self.colorMode == .single ){
                 //Single Color
@@ -171,23 +170,13 @@ extension Accessory {
         private func SetAllPixelsToSingle(color: NeoColor, shouldWait: Bool){
   
             self.lastColorChangeDate = Date()
-            print("SetColor: \(color.CombinedUInt32)")
+            //print("SetColor: \(color.CombinedUInt32)")
             let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
             self.ws281x.setLeds(initial)
             ws281x.start()
             if(shouldWait){ws281x.wait()} // Blocking
         }
         
-        private func StopCycleColor()
-        {
-            if(self.cycleColorTimer == nil) {return}
-            if(self.cycleColorTimer!.isValid)
-            {
-                self.cycleColorTimer!.invalidate()
-                self.cycleColorTimer = nil
-                print("Invalidated Timer")
-            }
-        }
         
         /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
         /// enters color1, color2, color1, color2. The cycle should begin
@@ -203,58 +192,91 @@ extension Accessory {
             print("Validating ColorMode: \((self.colorMode == .single) ? "Single" : "Multi" )")
         }
         
+        
         private func UpdatePreviousColorArray(withNewColor: NeoColor)
         {
             self.previous4Colors.removeFirst()
             self.previous4Colors.append(withNewColor)
         }
         
+        
+        /// Call this function to stop the color cycle timer.
+        private func StopCycleColor()
+        {
+            print("StopCycleColorTimer")
+            if(self.cycleColorTimer == nil) {return}
+            if(self.cycleColorTimer!.isValid)
+            {
+                self.cycleColorTimer!.invalidate()
+                self.cycleColorTimer = nil
+                //print("Invalidated Timer")
+            }
+        }
+        
+        
+        /// Call this function to cycle between two colors at the specified time interval.
+        /// At the end of the cycle the color will cycle back to the first color and continue
+        /// indefinitly until it is canceled with the StopCycleColor function.
+        ///
+        /// - Parameters:
+        ///   - color1: the starting color
+        ///   - color2: the ending color
+        ///   - withTimeInterval: time in seconds to repete the timer
         private func StartCycleColor(color1: NeoColor, color2: NeoColor, withTimeInterval: TimeInterval)
         {
+            
+            print("StartCycleColorTimer")
+            
             // Required Calcs
-            var cycleColor  = color1
+            var newCycleColor  = color1
             var startColor  = color1
             var endColor    = color2
-            
-            startColor.PrintRGBandHSV(label: "StartColor")
-            endColor.PrintRGBandHSV(label: "EndColor")
 
             let fullTransitionInSeconds:Double = 60.0 * 5.0 // 5Min
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
-            func CalculateIncrimentalColor(startColor: NeoColor, endColor: NeoColor) -> NeoColor
+            
+            /// Lambda - Calculates incrimental color value that must be applied to start color per
+            /// iteration to reach final color
+            ///
+            /// - Parameters:
+            ///   - startColor: starting color of color cycle
+            ///   - endColor: end color of color cycle
+            ///   - totalRefreshCount: the total refreshes need to reach the end color
+            /// - Returns: returns the incriment color
+            func CalculateIncrimentalColor(startColor: NeoColor, endColor: NeoColor, totalRefreshCount: Double) -> NeoColor
             {
                 let deltaColor = endColor - startColor
                 let hueInc = (deltaColor!.hsv.h / Float(totalRefreshCount))
                 let satInc = (deltaColor!.hsv.s / Float(totalRefreshCount))
                 let brightInc = (deltaColor!.hsv.v / Float(totalRefreshCount))
                 
-                print("HueInc: \(hueInc)")
-                print("SatInc: \(satInc)")
-                print("BrighInc: \(brightInc)")
-                
                 return NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
             }
             
-            var incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
+            var incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount)
             var colorIncrimenterCounter =  CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
             
-            // Lambda
+            
+            /// Lambda - This is the time that runs to change the color
+            ///
+            /// - Parameter withInterval: the update interval to run the block function in the timer
             func RunTimer(withInterval: TimeInterval)
             {
                 cycleColorTimer = Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: true, block: { (Timer) in
                                         
-                    cycleColor = (startColor + colorIncrimenterCounter)!
+                    newCycleColor = (startColor + colorIncrimenterCounter)!
                     colorIncrimenterCounter = (colorIncrimenterCounter + incColor)! // We keep adding our incColor (1 -Step) at a time
                     
-                    colorIncrimenterCounter.PrintRGBandHSV(label: "Inc color")
+                    self.SetAllPixelsToSingle(color: newCycleColor, shouldWait: true)
                     
-                    self.SetAllPixelsToSingle(color: cycleColor, shouldWait: true)
-                    
-                    cycleColor.PrintRGBandHSV(label: "CycleColor")
+                    print("-----")
+                    startColor.PrintRGBandHSV(label: "StartColor")
+                    newCycleColor.PrintRGBandHSV(label: "CycleColor")
                     endColor.PrintRGBandHSV(label: "EndColor")
+                    print("-----")
                     
-                    if(cycleColor == endColor){
+                    if(newCycleColor == endColor){
                         print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
                         incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor)
@@ -262,7 +284,6 @@ extension Accessory {
                     }
                 })
             }
-            
             
             if(self.cycleColorTimer == nil)
             {
@@ -274,52 +295,6 @@ extension Accessory {
                 RunTimer(withInterval: withTimeInterval)
             }
         }
-        
-        
-        
-//        // MARK: Cycle Colors
-//        // This needs to be in an event loop somehow
-//        private func CycleColors(color1: NeoColor, color2: NeoColor)
-//        {
-//            let color1 = NeoColor(red: red1, green: green1, blue: blue1)
-//            let color2 = NeoColor(red: red2, green: green2, blue: blue2)
-//
-//            self.primaryColor = color1
-//            self.secondaryColor = color2
-//            let _ = self.WriteConfigToFileSystem()
-//
-//            if(eventLoop.state == .resumed){eventLoop.suspend()}
-//            if(self.state == 0){return "Success"} // We dont need to start the loop if our lights are off.
-//
-//            // Lets cycle our color
-//            var cycleColor  = color1
-//            var startColor  = color1
-//            var endColor    = color2
-//
-//            let fullTransitionInSeconds:Float = 60.0 * 5.0
-//            let totalRefreshCount = fullTransitionInSeconds / Float(eventLoop.timeInterval)
-//
-//            eventLoop.eventHandler = {
-//
-//                let deltaColor = startColor - endColor
-//                let hueInc = deltaColor!.hsv.h / totalRefreshCount
-//                let satInc = deltaColor!.hsv.s / totalRefreshCount
-//                let brightInc = deltaColor!.hsv.v / totalRefreshCount
-//                let IncColor = NeoColor(hue: hueInc, saturation: satInc, brightness: brightInc)
-//
-//                cycleColor = (cycleColor - IncColor)!
-//
-//                if(cycleColor == endColor){
-//                    print("Switch Direction")
-//                    swap(&startColor, &endColor)
-//                }
-//
-//                print("\(cycleColor.CombinedUInt32)")
-//                self.SetAllPixelsTo(color: cycleColor, shouldWait: false,  honorDeviceState: true)
-//            }
-//            eventLoop.resume()
-//        }
-       
     }
 }
 
