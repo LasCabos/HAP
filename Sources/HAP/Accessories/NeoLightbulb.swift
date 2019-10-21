@@ -205,6 +205,7 @@ extension Accessory {
                 self.ws281x.setLeds(leds)
                 self.ws281x.start()
                 leds = scroll(leds)
+                usleep(100000)
             }
         }
         
