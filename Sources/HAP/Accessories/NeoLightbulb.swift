@@ -156,6 +156,7 @@ extension Accessory {
             else{
                 // Multi Color
                 print("Multi Color - Apply Color Change")
+                self.SnakeLight(color: self.currentColor)
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                 self.StartCycleColor(color1: previous4Colors[2], color2: previous4Colors[3], withTimeInterval: 1)
             }
@@ -170,12 +171,43 @@ extension Accessory {
         private func SetAllPixelsToSingle(color: NeoColor, shouldWait: Bool){
   
             self.lastColorChangeDate = Date()
-            //print("SetColor: \(color.CombinedUInt32)")
             let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
             self.ws281x.setLeds(initial)
             ws281x.start()
             if(shouldWait){ws281x.wait()} // Blocking
         }
+        
+        
+        func SnakeLight(color: NeoColor)
+        {
+            let initial = [UInt32](repeating: color.CombinedUInt32, count: self.numLEDs)
+            
+            func ledsSnake(_ values: [UInt32]) -> [UInt32] {
+                var values = values
+                values[0] = 0x006060
+                values[1] = 0x004040
+                values[2] = 0x002020
+                values[3] = 0x000020
+                values[4] = 0x000020
+                values[5] = 0x000020
+                return values
+            }
+            
+            func scroll(_ values: [UInt32]) -> [UInt32] {
+                var arr = Array(values[1..<values.count])
+                arr.append(values[0])
+                return arr
+            }
+            
+            // Snake
+            var leds:[UInt32] = ledsSnake(initial)
+            for i in 0...200 {
+                self.ws281x.setLeds(leds)
+                self.ws281x.start()
+                leds = scroll(leds)
+            }
+        }
+        
         
         
         /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
