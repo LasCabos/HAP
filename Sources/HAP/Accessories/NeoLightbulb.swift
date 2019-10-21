@@ -99,8 +99,11 @@ extension Accessory {
                 // brigtness values stored in our array.
                 for i in 0..<previous4Colors.count
                 {
-                    let newColor = NeoColor(degrees: Float(self.hue!), percent: Float(self.saturation!), percent: Float(self.brightness!))
-                    previous4Colors[i] = newColor
+                    //BUG - this sets all the colors to the new color and messes up the cycle
+                    let oldColor = previous4Colors[i]
+                    let updatedColor = NeoColor(hue: oldColor.hsv.h, saturation: oldColor.hsv.s, brightness: Float(newValue!) / 100.0)
+                    
+                    previous4Colors[i] = updatedColor
                 }
 
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
