@@ -52,6 +52,7 @@ extension Accessory {
             colorMode = .single
             super.init(info: info, type: .lightbulb, services: [neoLightBulbService] + additionalServices)
             
+            // This is used as the startup color... i think.
             self.hue = 360
             self.saturation = 100
             self.brightness = 100
