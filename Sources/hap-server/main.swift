@@ -22,9 +22,9 @@ if CommandLine.arguments.contains("--recreate") {
 }
 
 let deviceName = "DeskLight"
-let deviceSerialNumber = String(Int.random(in: 1 ..< 99999))
-let bridgeName = "Bridge99"
-let bridgeSerialNumber = String(Int.random(in: 1 ..< 99999))
+let deviceSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
+let bridgeName = "BridgeDesk"
+let bridgeSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
 
 let file = "MartinConfig.txt"
 let text = "EditedText"
@@ -82,7 +82,7 @@ class MyDeviceDelegate: DeviceDelegate {
             + "of accessory \(accessory.info.name.value ?? "") "
             + "did change: \(String(describing: newValue))")
                 
-        if(accessory.serialNumber == "00002"){
+        if(accessory.serialNumber == "00001"){
             
             print("Main.swift: Characteristic Description: \(characteristic.description!)")
             if(characteristic.description! == "Hue"){
