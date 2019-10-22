@@ -21,14 +21,20 @@ if CommandLine.arguments.contains("--recreate") {
     try storage.write(Data())
 }
 
+let deviceName = "Desk Light"
+let deviceSerialNumber = String(Int.random(in: 1 ..< 99999))
+let bridgeName = "Bridge"
+let bridgeSerialNumber = String(Int.random(in: 1 ..< 99999))
+
+
 //let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 //let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
 
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: "Desk Light", serialNumber: "00002"), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 144)
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: deviceName, serialNumber: deviceSerialNumber), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 144)
 
 let device = Device(
-    bridgeInfo: Service.Info(name: "Bridge", serialNumber: "00001"),
-    setupCode: "123-44-322",
+    bridgeInfo: Service.Info(name: bridgeName, serialNumber: bridgeSerialNumber),
+    setupCode: "123-44-555",
     storage: storage,
     accessories: [
         neoLightbulb
