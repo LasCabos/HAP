@@ -25,6 +25,17 @@ if CommandLine.arguments.contains("--recreate") {
 if CommandLine.arguments.contains("--help") ||
     CommandLine.arguments.contains("-h"){
     
+    if CommandLine.arguments.contains("--help") ||
+        CommandLine.arguments.contains("-h"){
+        print("--- Help Info ----")
+        print("")
+        print("The following commands are supported")
+        print("[--recreate] Will reset the device configuration and allow new paring with Homekit")
+        print("[--type][-t] Will allow definition of the device type (RPi3 or RPiZero).")
+        print("\t Calling -t or -type will call recreate and will require you re-pair the device.")
+    }
+    
+    exit(0)
 }
 
 let deviceName = "Light"
@@ -88,7 +99,7 @@ class MyDeviceDelegate: DeviceDelegate {
             + "of accessory \(accessory.info.name.value ?? "") "
             + "did change: \(String(describing: newValue))")
                 
-        if(accessory.serialNumber == "00001"){
+        if(accessory.serialNumber == deviceSerialNumber){
             
             print("Main.swift: Characteristic Description: \(characteristic.description!)")
             if(characteristic.description! == "Hue"){
