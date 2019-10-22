@@ -28,19 +28,20 @@ let bridgeSerialNumber = String(Int.random(in: 1 ..< 99999))
 
 let file = "MartinConfig.txt"
 let text = "SomeText"
-if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first{
-    let fileURL = dir.appendingPathComponent(file)
-    print("DocDir: \(dir)")
-    print("FileDir: \(fileURL)")
-    do{
-        try text.write(to: fileURL, atomically: false, encoding: .utf8)
-        print("Writing to file success")
-    }catch{print("Could not write to file")}
-    do{
-        let readingTest = try String(contentsOf: fileURL, encoding: .utf8)
-        print("Reading of file success")
-    }catch{print("CouldNotReadFile")}
-}
+
+let dir = FileManager.default.homeDirectoryForCurrentUser
+let fileURL = dir.appendingPathComponent(file)
+print("DocDir: \(dir)")
+print("FileDir: \(fileURL)")
+do{
+    try text.write(to: fileURL, atomically: false, encoding: .utf8)
+    print("Writing to file success")
+}catch{print("Could not write to file")}
+do{
+    let readingTest = try String(contentsOf: fileURL, encoding: .utf8)
+    print("Reading of file success")
+}catch{print("CouldNotReadFile")}
+
 
 //let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 //let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
