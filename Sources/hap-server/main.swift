@@ -21,9 +21,9 @@ if CommandLine.arguments.contains("--recreate") {
     try storage.write(Data())
 }
 
-let deviceName = "Desk Light"
+let deviceName = "Super Light"
 let deviceSerialNumber = String(Int.random(in: 1 ..< 99999))
-let bridgeName = "Bridge"
+let bridgeName = "Bridge99"
 let bridgeSerialNumber = String(Int.random(in: 1 ..< 99999))
 
 
