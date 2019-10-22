@@ -29,12 +29,13 @@ if CommandLine.arguments.contains("--help") ||
         CommandLine.arguments.contains("-h"){
         print("--- Help Info ----")
         print("")
-        print("The following commands are supported")
+        print("The following commands are supported:")
         print("[--recreate] Will reset the device configuration and allow new paring with Homekit")
         print("[--type][-t] Will allow definition of the device type (RPi3 or RPiZero).")
-        print("\t Calling -t or -type will call recreate and will require you re-pair the device.")
+        print("\t\t Calling -t or -type will call recreate and will require you re-pair the device.")
+        print("---- End Help ----")
+        print("")
     }
-    
     exit(0)
 }
 
