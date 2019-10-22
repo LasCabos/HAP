@@ -29,7 +29,7 @@ let bridgeSerialNumber = String(Int.random(in: 1 ..< 99999))
 let file = "MartinConfig.txt"
 let text = "SomeText"
 
-let dir = FileManager.default.homeDirectoryForCurrentUser
+let dir = FileManager.default.homeDirectory(forUser: "pi")!
 let fileURL = dir.appendingPathComponent(file)
 print("DocDir: \(dir)")
 print("FileDir: \(fileURL)")
