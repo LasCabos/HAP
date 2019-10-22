@@ -15,15 +15,21 @@ fileprivate let logger = getLogger("demo")
 getLogger("hap").logLevel = .debug
 getLogger("hap.encryption").logLevel = .warning
 
+// Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
 if CommandLine.arguments.contains("--recreate") {
     logger.info("Dropping all pairings, keys")
     try storage.write(Data())
 }
 
-let deviceName = "DeskLight"
+if CommandLine.arguments.contains("--help") ||
+    CommandLine.arguments.contains("-h"){
+    
+}
+
+let deviceName = "Light"
 let deviceSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
-let bridgeName = "BridgeDesk"
+let bridgeName = "Bridge"
 let bridgeSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
 
 let file = "MartinConfig.txt"
@@ -166,3 +172,8 @@ withExtendedLifetime([delegate]) {
 
 try server.stop()
 logger.info("Stopped")
+
+func ProcessCommandLineArguments()
+{
+    
+}
