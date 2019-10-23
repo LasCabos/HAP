@@ -61,11 +61,13 @@ else if(neoDeviceConfig.ReadJSON()) //If we havent set a config lets try to read
 {
     if(!neoDeviceConfig.isValid){
         print("The configuration file is not valid. Please set a new configuration using the --config/-c command line options. Please see --help/-h for more information")
+        exit(0)
     }
 }
 else
 {
     print("You have not set a configuration with --config/-c or have a previously stored configuration.json file. The software will now exit. Please see --help for more information.")
+    exit(0)
 }
 
 
