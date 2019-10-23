@@ -15,7 +15,7 @@ fileprivate let logger = getLogger("demo")
 getLogger("hap").logLevel = .debug
 getLogger("hap.encryption").logLevel = .warning
 
-// Process Command Line Arguments
+//MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
 if CommandLine.arguments.contains("--recreate") {
     logger.info("Dropping all pairings, keys")
@@ -24,47 +24,61 @@ if CommandLine.arguments.contains("--recreate") {
 
 if CommandLine.arguments.contains("--help") ||
     CommandLine.arguments.contains("-h"){
+    print("--- Help Info ----")
+    print("")
+    print("The following commands are supported:")
+    print("[--recreate] Will reset the device configuration and allow new paring with Homekit")
+    print("[--config][-c] This will allow the configuration of the NeoPixel Device. It requires two non-optional strings")
+    print("Example: --config BoardType NumLEDs")
+    print("Example: --config Rpi0 144")
+    print("/t/t The following are supported board types:")
+    print("/t/t/t RPiZero: 0, rpizero, zero, rpi0")
+    print("/t/t/t RPi3:    3, rpithree, three, rpi3")
+    print("---- End Help ----")
+    print("")
     
-    if CommandLine.arguments.contains("--help") ||
-        CommandLine.arguments.contains("-h"){
-        print("--- Help Info ----")
-        print("")
-        print("The following commands are supported:")
-        print("[--recreate] Will reset the device configuration and allow new paring with Homekit")
-        print("[--type][-t] Will allow definition of the device type (RPi3 or RPiZero).")
-        print("\t\t Calling -t or -type will call recreate and will require you re-pair the device.")
-        print("---- End Help ----")
-        print("")
-    }
     exit(0)
 }
+
+var neoDeviceConfig = CustomNeoConfig()
+
+if(CommandLine.arguments.contains("--config") || CommandLine.arguments.contains("-c"))
+{
+    let isValid = neoDeviceConfig.ReadFrom(commandLineArguments: CommandLine.arguments)
+    if(isValid){
+        let didWrite = neoDeviceConfig.WriteJSON()
+        if(!didWrite){
+            print("Could not write JSON Config. Please contact your administrator.")
+            exit(0)
+        }
+    }
+    else{
+        print("Could not read from command line arguments. They must be invalid. Use -h or --help.")
+        exit(0)
+    }
+}
+else if(neoDeviceConfig.ReadJSON()) //If we havent set a config lets try to read from JSON
+{
+    if(!neoDeviceConfig.isValid){
+        print("The configuration file is not valid. Please set a new configuration using the --config/-c command line options. Please see --help/-h for more information")
+    }
+}
+else
+{
+    print("You have not set a configuration with --config/-c or have a previously stored configuration.json file. The software will now exit. Please see --help for more information.")
+}
+
 
 let deviceName = "Light"
 let deviceSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
 let bridgeName = "Bridge"
 let bridgeSerialNumber = "00001"//String(Int.random(in: 1 ..< 99999))
 
-let file = "MartinConfig.txt"
-let text = "EditedText"
-
-let dir = FileManager.default.homeDirectory(forUser: "pi")!
-let fileURL = dir.appendingPathComponent(file)
-print("DocDir: \(dir)")
-print("FileDir: \(fileURL)")
-do{
-    try text.write(to: fileURL, atomically: false, encoding: .utf8)
-    print("Writing to file success")
-}catch{print("Could not write to file")}
-do{
-    let readingTest = try String(contentsOf: fileURL, encoding: .utf8)
-    print("Reading of file success")
-}catch{print("CouldNotReadFile")}
-
-
 //let livingRoomLightbulb = Accessory.Lightbulb(info: Service.Info(name: "Living Room", serialNumber: "00002"))
 //let bedroomNightStand = Accessory.Lightbulb(info: Service.Info(name: "Bedroom", serialNumber: "00003"))
 
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: deviceName, serialNumber: deviceSerialNumber), boardType: SupportedBoard.RaspberryPi3, numberOfLEDs: 144)
+// MARK: - Setup Our Device
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: deviceName, serialNumber: deviceSerialNumber), boardType: neoDeviceConfig.boardType!, numberOfLEDs: neoDeviceConfig.numLEDs!)
 
 let device = Device(
     bridgeInfo: Service.Info(name: bridgeName, serialNumber: bridgeSerialNumber),
@@ -185,7 +199,6 @@ withExtendedLifetime([delegate]) {
 try server.stop()
 logger.info("Stopped")
 
-func ProcessCommandLineArguments()
-{
-    
-}
+
+
+
