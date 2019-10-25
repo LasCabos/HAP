@@ -167,6 +167,7 @@ func stop() {
     DispatchQueue.main.async {
         logger.info("Shutting down...")
         keepRunning = false
+        neoLightbulb.Cleanup()
     }
 }
 signal(SIGINT) { _ in stop() }

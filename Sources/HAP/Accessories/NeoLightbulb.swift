@@ -121,6 +121,10 @@ extension Accessory {
             get {return self.colorMode}
         }
         
+        public func Cleanup()
+        {
+            self.ws281x.cleanup()
+        }
         
         // MARK: - Utility functions to change color of lights
         private var currentColor: NeoColor{
