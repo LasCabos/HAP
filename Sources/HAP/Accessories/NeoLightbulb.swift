@@ -65,7 +65,6 @@ extension Accessory {
                 return self.neoLightBulbService.hue?.value
             }
             set {
-                print("Hue")
                 self.neoLightBulbService.hue?.value = newValue
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
@@ -80,7 +79,6 @@ extension Accessory {
                 return self.neoLightBulbService.saturation?.value
             }
             set {
-                print("Sat")
                 self.neoLightBulbService.saturation?.value = newValue
                 //self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -91,7 +89,6 @@ extension Accessory {
                 return self.neoLightBulbService.brightness?.value
             }
             set {
-                print("Brightness")
                 self.neoLightBulbService.brightness?.value = newValue
                                 
                 // Adjust brightness for array of 4 colors
@@ -114,7 +111,6 @@ extension Accessory {
                 return self.neoLightBulbService.powerState.value
             }
             set {
-                print("State")
                 self.neoLightBulbService.powerState.value = newValue
                 ChangeDeviceState(state: newValue!)
                 
@@ -149,13 +145,11 @@ extension Accessory {
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
             
             if( self.colorMode == .single ){
-                print("Single Color")
                 self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
             }
             else{
                 // Multi Color
-                print("Multi Color - Apply Color Change")
                 RandomColorFlash()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                 self.StartCycleColor(color1: previous4Colors[2], color2: previous4Colors[3], withTimeInterval: 1)
@@ -200,8 +194,6 @@ extension Accessory {
                 self.colorMode = .multi
             }
             else{self.colorMode = .single}
-            
-            print("Validating ColorMode: \((self.colorMode == .single) ? "Single" : "Multi" )")
         }
         
         
@@ -215,13 +207,11 @@ extension Accessory {
         /// Call this function to stop the color cycle timer.
         private func StopCycleColor()
         {
-            print("StopCycleColorTimer")
             if(self.cycleColorTimer == nil) {return}
             if(self.cycleColorTimer!.isValid)
             {
                 self.cycleColorTimer!.invalidate()
                 self.cycleColorTimer = nil
-                //print("Invalidated Timer")
             }
         }
         
@@ -236,10 +226,6 @@ extension Accessory {
         ///   - withTimeInterval: time in seconds to repete the timer
         private func StartCycleColor(color1: NeoColor, color2: NeoColor, withTimeInterval: TimeInterval)
         {
-            
-            print("StartCycleColorTimer")
-            
-            // Required Calcs
             var newCycleColor  = color1
             var startColor  = color1
             var endColor    = color2
@@ -282,14 +268,7 @@ extension Accessory {
                     
                     self.SetAllPixelsToSingle(color: newCycleColor, shouldWait: true)
                     
-                    print("-----")
-                    startColor.PrintRGBandHSV(label: "StartColor")
-                    newCycleColor.PrintRGBandHSV(label: "CycleColor")
-                    endColor.PrintRGBandHSV(label: "EndColor")
-                    print("-----")
-                    
                     if(newCycleColor == endColor){
-                        print("Switch / Swap Color Direction")
                         swap(&startColor, &endColor)
                         incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount) // Recalc in the reverse Direction
                         colorIncrimentSummation = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount) // Reset our colorIncrementSummation bact to start

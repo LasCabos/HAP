@@ -12,8 +12,8 @@ fileprivate let logger = getLogger("demo")
     import Glibc
 #endif
 
-getLogger("hap").logLevel = .debug
-getLogger("hap.encryption").logLevel = .warning
+getLogger("hap").logLevel = .off
+getLogger("hap.encryption").logLevel = .off
 
 //MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
@@ -118,7 +118,7 @@ class MyDeviceDelegate: DeviceDelegate {
                 
         if(accessory.serialNumber == deviceSerialNumber){
             
-            print("Main.swift: Characteristic Description: \(characteristic.description!)")
+            //print("Main.swift: Characteristic Description: \(characteristic.description!)")
             if(characteristic.description! == "Hue"){
                 neoLightbulb.hue = newValue as! Float
             }
