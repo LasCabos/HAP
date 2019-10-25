@@ -14,6 +14,7 @@ fileprivate let logger = getLogger("demo")
 
 getLogger("hap").logLevel = .off
 getLogger("hap.encryption").logLevel = .off
+logger.logLevel = .off
 
 //MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
