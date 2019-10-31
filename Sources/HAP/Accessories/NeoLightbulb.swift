@@ -27,6 +27,7 @@ extension Accessory {
         private let neoLightBulbService: Service.NeoLightbulbService!
         private var colorMode: ColorMode!
         private var numLEDs: Int!
+        private var cycleTime: Int = 5 // Cycle time from one color to the next
         private var ws281x: WS281x!
         private var lastColorChangeDate = Date()
         
@@ -38,11 +39,13 @@ extension Accessory {
                     additionalServices: [Service] = [],
                     boardType: SupportedBoard,
                     numberOfLEDs: Int,
+                    cycleTime: Int,
                     type: ColorType = .color,
                     isDimmable: Bool = true)
         {
             
             self.numLEDs = numberOfLEDs
+            self.cycleTime = cycleTime
             
             let pwms = SwiftyGPIO.hardwarePWMs(for: boardType)!
             let gpio = (pwms[0]?[.P18])!
@@ -234,7 +237,7 @@ extension Accessory {
             var startColor  = color1
             var endColor    = color2
 
-            let fullTransitionInSeconds:Double = 60.0 * 5.0 // 5Min
+            let fullTransitionInSeconds:Double =  Double(self.cycleTime)
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
             
