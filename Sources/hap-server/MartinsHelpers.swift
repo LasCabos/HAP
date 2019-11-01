@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftyGPIO
-import SPMUtility
+//import SPMUtility
 
 
 struct ConfigurationModel: Codable{
@@ -51,51 +51,43 @@ struct ConfigurationModel: Codable{
     }
 }
 
-enum SupportedCommandLineArguments: String{
-    case name = "--name"
-    case numLEDs = "--numLEDs"
-    case boardType = "--boardType"
-    case cycleTime = "--cycleTime"
-    case recreate = "recreate"
-}
-
-func ParseCommandLineArguments(commandLineArgs: [String]) -> (success: Bool, configModel: ConfigurationModel)
-{
-    let parser = ArgumentParser(commandName: "hap-server", usage:  "[options]", overview: "HAP-Sever NeoLight allows control of NeoPixel light bulbs attached to a RaspberryPi")
-    
-    let recreateOpt:PositionalArgument<String> = parser.add(positional: ConfigurationModel.CodingKeys.recreate.rawValue, kind: String.self, optional: true, usage: "Recreate HAP device profile", completion: ShellCompletion.none)
-    
-    let nameOpt = parser.add(option: ConfigurationModel.CodingKeys.name.rawValue, shortName: "-n", kind: String.self, usage: "Custom name for device.", completion: ShellCompletion.none)
-    
-    let numOpt = parser.add(option: ConfigurationModel.CodingKeys.numLEDs.rawValue, shortName: "-l", kind: Int.self, usage: "The number of NeoPixel LEDs on the board.", completion: ShellCompletion.none)
-    
-    let typOpt = parser.add(option: ConfigurationModel.CodingKeys.boardType.rawValue,
-                            shortName: "-t",
-                            kind: String.self,
-                            usage: "The type of RPi device. (\(SupportedBoard.RaspberryPi3), \(SupportedBoard.RaspberryPiPlusZero))",
-        completion: ShellCompletion.none)
-    
-    let cycleOpt = parser.add(option: ConfigurationModel.CodingKeys.cycleTime.stringValue, shortName: "-c", kind: Int.self, usage: "Full color cycle in minuets", completion: ShellCompletion.none)
-    
-    
-    guard let parserResult = try? parser.parse(Array(commandLineArgs.dropFirst()))
-        else{return (false, ConfigurationModel())}
-    
-    var configModel = ConfigurationModel()
-    
-    configModel.name = parserResult.get(nameOpt)
-    configModel.numLEDs = parserResult.get(numOpt)
-    configModel.cycleTime = parserResult.get(cycleOpt)
-    
-    let type = parserResult.get(typOpt)
-    if(type != nil && !type!.isEmpty){
-        configModel.boardType = SupportedBoard(rawValue: type!)
-    }
-    
-    configModel.recreate = (parserResult.get(recreateOpt) != nil) ? true : false
-    
-    return (true, configModel)
-}
+//func ParseCommandLineArguments(commandLineArgs: [String]) -> (success: Bool, configModel: ConfigurationModel)
+//{
+//    let parser = ArgumentParser(commandName: "hap-server", usage:  "[options]", overview: "HAP-Sever NeoLight allows control of NeoPixel light bulbs attached to a RaspberryPi")
+//
+//    let recreateOpt:PositionalArgument<String> = parser.add(positional: ConfigurationModel.CodingKeys.recreate.rawValue, kind: String.self, optional: true, usage: "Recreate HAP device profile", completion: ShellCompletion.none)
+//
+//    let nameOpt = parser.add(option: ConfigurationModel.CodingKeys.name.rawValue, shortName: "-n", kind: String.self, usage: "Custom name for device.", completion: ShellCompletion.none)
+//
+//    let numOpt = parser.add(option: ConfigurationModel.CodingKeys.numLEDs.rawValue, shortName: "-l", kind: Int.self, usage: "The number of NeoPixel LEDs on the board.", completion: ShellCompletion.none)
+//
+//    let typOpt = parser.add(option: ConfigurationModel.CodingKeys.boardType.rawValue,
+//                            shortName: "-t",
+//                            kind: String.self,
+//                            usage: "The type of RPi device. (\(SupportedBoard.RaspberryPi3), \(SupportedBoard.RaspberryPiPlusZero))",
+//        completion: ShellCompletion.none)
+//
+//    let cycleOpt = parser.add(option: ConfigurationModel.CodingKeys.cycleTime.stringValue, shortName: "-c", kind: Int.self, usage: "Full color cycle in minuets", completion: ShellCompletion.none)
+//
+//
+//    guard let parserResult = try? parser.parse(Array(commandLineArgs.dropFirst()))
+//        else{return (false, ConfigurationModel())}
+//
+//    var configModel = ConfigurationModel()
+//
+//    configModel.name = parserResult.get(nameOpt)
+//    configModel.numLEDs = parserResult.get(numOpt)
+//    configModel.cycleTime = parserResult.get(cycleOpt)
+//
+//    let type = parserResult.get(typOpt)
+//    if(type != nil && !type!.isEmpty){
+//        configModel.boardType = SupportedBoard(rawValue: type!)
+//    }
+//
+//    configModel.recreate = (parserResult.get(recreateOpt) != nil) ? true : false
+//
+//    return (true, configModel)
+//}
 
 func ReadConfigFrom(url: Foundation.URL) -> (success: Bool, configModel: ConfigurationModel)
 {
