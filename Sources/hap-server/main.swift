@@ -27,6 +27,11 @@ if CommandLine.arguments.contains("--recreate") {
     print("Deleting NeoHAPConfig.json")
 }
 
+if CommandLine.arguments.contains("--reset") {
+    print("Delete NeoHAPConfig settings only.")
+    let _ = DeleteConfigFile(url: neoHAPConfigURL)
+}
+
 //MARK: - Check if we have a NeoConfig Stored
 var configRead = ReadConfigFrom(url: neoHAPConfigURL)
 var configModel = configRead.configModel
