@@ -237,7 +237,7 @@ extension Accessory {
             var startColor  = color1
             var endColor    = color2
 
-            let fullTransitionInSeconds:Double =  Double(self.cycleTime)
+            let fullTransitionInSeconds:Double =  Double(self.cycleTime) * 60
             let totalRefreshCount = fullTransitionInSeconds / withTimeInterval
             
             

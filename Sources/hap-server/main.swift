@@ -32,6 +32,7 @@ var configRead = ReadConfigFrom(url: neoHAPConfigURL)
 var configModel = configRead.configModel
 if(!configRead.success || !configRead.configModel.isFullyConfigured())
 {
+    print("We need to construct a valid configuration file. Please enter the following items")
     // ASK New Questions for configuration
     var deviceName:String?
     var numLEDs:Int?
