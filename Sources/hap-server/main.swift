@@ -17,6 +17,7 @@ getLogger("hap.encryption").logLevel = .off
 logger.logLevel = .off
 
 var neoHAPConfigURL = FileManager.default.homeDirectory(forUser: "pi")!.appendingPathComponent("NeoHAPConfiguration.json")
+var testHomeDir = FileManager.default.homeDirectoryForCurrentUser;
 
 //MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
@@ -37,7 +38,14 @@ var configRead = ReadConfigFrom(url: neoHAPConfigURL)
 var configModel = configRead.configModel
 if(!configRead.success || !configRead.configModel.isFullyConfigured())
 {
+    print()
+    print()
+    print("----- Neopixel HAP Configuration ----")
+    print("Config File: \(neoHAPConfigURL)")
+    print("Testing HomeDirCommand: \(testHomeDir)")
+    print()
     print("We need to construct a valid configuration file. Please enter the following items")
+    print()
     // ASK New Questions for configuration
     var deviceName:String?
     var numLEDs:Int?
