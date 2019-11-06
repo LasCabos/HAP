@@ -37,6 +37,13 @@ var configRead = ReadConfigFrom(url: neoHAPConfigURL)
 var configModel = configRead.configModel
 if(!configRead.success || !configRead.configModel.isFullyConfigured())
 {
+    let testStore = FileStorage(filename: "MartinsFile.json")
+    guard let encJson = try? JSONEncoder().encode(configModel)
+        else{exit(0)}
+    try testStore.write(encJson)
+    
+    
+    
     print()
     print()
     print("----- Neopixel HAP Configuration ----")
