@@ -89,6 +89,28 @@ struct ConfigurationModel: Codable{
 //    return (true, configModel)
 //}
 
+extension Data
+{
+    func asConfigurationModel() -> (success:Bool, configModel: ConfigurationModel)
+    {
+        let decoder = JSONDecoder()
+        guard let decodedJson = try? decoder.decode(ConfigurationModel.self, from: self)
+            else{return (false, ConfigurationModel())}
+        return (true, decodedJson)
+    }
+}
+
+extension ConfigurationModel
+{
+    func asData() -> (success:Bool, data:Data)
+    {
+        guard let temp = try? JSONEncoder().encode(configModel)
+            else{return (false, Data())}
+        
+        return (true, temp)
+    }
+}
+
 func ReadConfigFrom(url: Foundation.URL) -> (success: Bool, configModel: ConfigurationModel)
 {
     guard let data = try? Data(contentsOf: url)

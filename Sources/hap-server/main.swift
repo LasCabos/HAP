@@ -16,39 +16,31 @@ getLogger("hap").logLevel = .off
 getLogger("hap.encryption").logLevel = .off
 logger.logLevel = .off
 
-var neoHAPConfigURL = FileManager.default.homeDirectory(forUser: "pi")!.appendingPathComponent("NeoHAPConfiguration.json")
-
 //MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
+let neoHAPConfigStorrage = FileStorage(filename: "NeoHAPConfiguration.json")
+
 if CommandLine.arguments.contains("--recreate") {
     logger.info("Dropping all pairings, keys")
+    logger.info("Removing all NeoHAP configuration settings")
     try storage.write(Data())
-    let _ = DeleteConfigFile(url: neoHAPConfigURL)
-    print("Deleting NeoHAPConfig.json")
+    try neoHAPConfigStorrage.write(Data())
 }
 
 if CommandLine.arguments.contains("--reset") {
-    print("Delete NeoHAPConfig settings only.")
-    let _ = DeleteConfigFile(url: neoHAPConfigURL)
+    logger.info("Removing all NeoHAP configuration settings")
+    try neoHAPConfigStorrage.write(Data())
 }
 
 //MARK: - Check if we have a NeoConfig Stored
-var configRead = ReadConfigFrom(url: neoHAPConfigURL)
-var configModel = configRead.configModel
-if(!configRead.success || !configRead.configModel.isFullyConfigured())
+var configData = try neoHAPConfigStorrage.read().asConfigurationModel()
+var configModel = configData.configModel
+if(!configData.success || !configModel.isFullyConfigured())
 {
-    let testStore = FileStorage(filename: "MartinsFile.json")
-    guard let encJson = try? JSONEncoder().encode(configModel)
-        else{exit(0)}
-    try testStore.write(encJson)
-    
-    
-    
     print()
     print()
     print("----- Neopixel HAP Configuration ----")
-    print("Config File: \(neoHAPConfigURL)")
-    print("Testing RunPath: \(FileManager.default.currentDirectoryPath)")
+    print("Config File: NeoHAPConfiguration.json")
     print()
     print("We need to construct a valid configuration file. Please enter the following items")
     print()
@@ -76,9 +68,14 @@ if (!configModel.isFullyConfigured()){
     exit(0)
 }
 
-if (!WriteConfigTo(url: neoHAPConfigURL, configModel: configModel)){
-    print("Error: Could not write config file. Attempting to continue.")
+do{
+    try neoHAPConfigStorrage.write(configModel.asData().data)
 }
+catch{
+    print("Error: Could not write config file. Attempting to continue.")
+    exit(0)
+}
+
 
 let deviceSerialNumber = "00001"
 let bridgeName = "Bridge"
