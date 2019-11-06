@@ -31,15 +31,18 @@ struct ConfigurationModel: Codable{
     }
 }
 
+enum DataError:Error{
+    case CouldNotDecode
+}
 
 extension Data
 {
-    func asConfigurationModel() -> (success:Bool, configModel: ConfigurationModel)
+    func asConfigurationModel() throws -> ConfigurationModel
     {
         let decoder = JSONDecoder()
         guard let decodedJson = try? decoder.decode(ConfigurationModel.self, from: self)
-            else{return (false, ConfigurationModel())}
-        return (true, decodedJson)
+            else{throw DataError.CouldNotDecode}
+        return decodedJson
     }
 }
 

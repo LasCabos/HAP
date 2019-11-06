@@ -34,9 +34,17 @@ if CommandLine.arguments.contains("--reset") {
 
 
 //MARK: - Check if we have a NeoConfig Stored
-var configData = try neoHAPConfigStorrage.read().asConfigurationModel()
-var configModel = configData.configModel
-if(!configData.success || !configModel.isFullyConfigured())
+var configModel: ConfigurationModel?
+do{
+    let readData = try neoHAPConfigStorrage.read()
+    configModel = try readData.asConfigurationModel()
+}
+catch{
+    print("Error Reading NeoHAPConfiguration.json file")
+    exit(0)
+}
+
+if(configModel == nil || !configModel!.isFullyConfigured())
 {
     print()
     print()
@@ -64,13 +72,13 @@ if(!configData.success || !configModel.isFullyConfigured())
     
 }
 
-if (!configModel.isFullyConfigured()){
+if (!configModel!.isFullyConfigured()){
     print("Error: Configuration invalid. Stopping program.")
     exit(0)
 }
 
 do{
-    try neoHAPConfigStorrage.write(configModel.asData().data)
+    try neoHAPConfigStorrage.write(configModel!.asData().data)
 }
 catch{
     print("Error: Could not write config file. Attempting to continue.")
@@ -84,11 +92,11 @@ let bridgeSerialNumber = "00001"
 
 
 // MARK: - Setup Our Device
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: configModel.name!,
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: configModel!.name!,
                                           serialNumber: deviceSerialNumber),
-                                          boardType: configModel.boardType!,
-                                          numberOfLEDs: configModel.numLEDs!,
-                                          cycleTime: configModel.cycleTime!)
+                                          boardType: configModel!.boardType!,
+                                          numberOfLEDs: configModel!.numLEDs!,
+                                          cycleTime: configModel!.cycleTime!)
 
 let device = Device(
     bridgeInfo: Service.Info(name: bridgeName, serialNumber: bridgeSerialNumber),
