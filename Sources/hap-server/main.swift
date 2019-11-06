@@ -32,6 +32,7 @@ if CommandLine.arguments.contains("--reset") {
     try neoHAPConfigStorrage.write(Data())
 }
 
+
 //MARK: - Check if we have a NeoConfig Stored
 var configData = try neoHAPConfigStorrage.read().asConfigurationModel()
 var configModel = configData.configModel
