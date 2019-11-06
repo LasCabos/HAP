@@ -17,7 +17,6 @@ getLogger("hap.encryption").logLevel = .off
 logger.logLevel = .off
 
 var neoHAPConfigURL = FileManager.default.homeDirectory(forUser: "pi")!.appendingPathComponent("NeoHAPConfiguration.json")
-var testHomeDir = FileManager.default.homeDirectoryForCurrentUser;
 
 //MARK:- Process Command Line Arguments
 let storage = FileStorage(filename: "configuration.json")
@@ -42,7 +41,7 @@ if(!configRead.success || !configRead.configModel.isFullyConfigured())
     print()
     print("----- Neopixel HAP Configuration ----")
     print("Config File: \(neoHAPConfigURL)")
-    print("Testing HomeDirCommand: \(testHomeDir)")
+    print("Testing RunPath: \(FileManager.default.currentDirectoryPath)")
     print()
     print("We need to construct a valid configuration file. Please enter the following items")
     print()
