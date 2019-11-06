@@ -34,41 +34,14 @@ if CommandLine.arguments.contains("--reset") {
 
 
 //MARK: - Check if we have a NeoConfig Stored
-var configModel: ConfigurationModel?
+var configModel: ConfigurationModel!
 do{
     let readData = try neoHAPConfigStorrage.read()
     configModel = try readData.asConfigurationModel()
 }
 catch{
     print("Error Reading NeoHAPConfiguration.json file")
-    exit(0)
-}
-
-if(configModel == nil || !configModel!.isFullyConfigured())
-{
-    print()
-    print()
-    print("----- Neopixel HAP Configuration ----")
-    print("Config File: NeoHAPConfiguration.json")
-    print()
-    print("We need to construct a valid configuration file. Please enter the following items")
-    print()
-    // ASK New Questions for configuration
-    var deviceName:String?
-    var numLEDs:Int?
-    var deviceType: SupportedBoard?
-    var colorCycleTime: Int?
-    
-    while(deviceName == nil || deviceName!.isEmpty){deviceName = AskQuestion(question: "Enter Device Name")}
-    while(numLEDs == nil){numLEDs = Int(AskQuestion(question: "Number Of LEDs")!)}
-    while(deviceType == nil){deviceType = SupportedBoard(rawValue: AskQuestion(question: "Device Type (RaspberryPi3, RaspberryPiPlusZero)")!)}
-    while(colorCycleTime == nil){colorCycleTime = Int(AskQuestion(question: "Full color cycle time in minutes")!)}
-    
-    configModel = ConfigurationModel(name: deviceName!,
-                                     numLEDs: numLEDs!,
-                                     boardType: deviceType!,
-                                     cycleTime: colorCycleTime!,
-                                     recreate: false)
+    configModel = GenerateConfigModelWithCMDQuestions()
     
 }
 
