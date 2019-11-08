@@ -45,13 +45,13 @@ catch{
     
 }
 
-if (!configModel!.isFullyConfigured()){
+if (configModel.isFullyConfigured()){
     print("Error: Configuration invalid. Stopping program.")
     exit(0)
 }
 
 do{
-    try neoHAPConfigStorrage.write(configModel!.asData().data)
+    try neoHAPConfigStorrage.write(configModel.asData().data)
 }
 catch{
     print("Error: Could not write config file. Attempting to continue.")
@@ -65,11 +65,11 @@ let bridgeSerialNumber = "00001"
 
 
 // MARK: - Setup Our Device
-let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: configModel!.name!,
+let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: configModel.name!,
                                           serialNumber: deviceSerialNumber),
-                                          boardType: configModel!.boardType!,
-                                          numberOfLEDs: configModel!.numLEDs!,
-                                          cycleTime: configModel!.cycleTime!)
+                                          boardType: configModel.boardType!,
+                                          numberOfLEDs: configModel.numLEDs!,
+                                          cycleTime: configModel.cycleTime!)
 
 let device = Device(
     bridgeInfo: Service.Info(name: bridgeName, serialNumber: bridgeSerialNumber),
