@@ -45,7 +45,7 @@ catch{
     
 }
 
-if (configModel.isFullyConfigured()){
+if (!configModel.isFullyConfigured()){
     print("Error: Configuration invalid. Stopping program.")
     exit(0)
 }
