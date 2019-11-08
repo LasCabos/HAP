@@ -158,6 +158,7 @@ extension Accessory {
             else{
                 // Multi Color
                 ColorFlash(color: NeoColor.white, completion: {
+                    print("In the Completion handler - Color flash completed - should cycle now")
                     self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                     self.StartCycleColor(color1: self.previous4Colors[2], color2: self.previous4Colors[3], withTimeInterval: 1)
                 })
@@ -183,7 +184,10 @@ extension Accessory {
         func ColorFlash(color: NeoColor?, completion: @escaping () -> ())
         {
             var counter = 0
-            let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { (Timer) in
+            let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true)
+            {
+                (Timer) in
+                print("ColorFlashCounter: \(counter)")
                 self.SetAllPixelsToSingle(color: (color == nil) ? NeoColor.randomColor : color!,
                                           shouldWait: true)
                 counter += 1
