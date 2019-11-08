@@ -285,6 +285,8 @@ extension Accessory {
                     
                     self.SetAllPixelsToSingle(color: newCycleColor, shouldWait: true)
                     
+                    print("ColorCycle NewColor: \(newCycleColor.CombinedUInt32)")
+                    
                     if(newCycleColor == endColor){
                         swap(&startColor, &endColor)
                         incColor = CalculateIncrimentalColor(startColor: startColor, endColor: endColor, totalRefreshCount: totalRefreshCount) // Recalc in the reverse Direction
