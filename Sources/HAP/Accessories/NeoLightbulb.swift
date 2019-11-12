@@ -68,6 +68,7 @@ extension Accessory {
                 return self.neoLightBulbService.hue?.value
             }
             set {
+                print("Hue")
                 self.neoLightBulbService.hue?.value = newValue
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
@@ -82,6 +83,7 @@ extension Accessory {
                 return self.neoLightBulbService.saturation?.value
             }
             set {
+                print("Sat")
                 self.neoLightBulbService.saturation?.value = newValue
                 //self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -92,6 +94,7 @@ extension Accessory {
                 return self.neoLightBulbService.brightness?.value
             }
             set {
+                print("Brightness")
                 self.neoLightBulbService.brightness?.value = newValue
                                 
                 // Adjust brightness for array of 4 colors
@@ -114,6 +117,7 @@ extension Accessory {
                 return self.neoLightBulbService.powerState.value
             }
             set {
+                print("State")
                 self.neoLightBulbService.powerState.value = newValue
                 ChangeDeviceState(state: newValue!)
                 
