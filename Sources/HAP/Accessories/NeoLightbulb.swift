@@ -25,7 +25,8 @@ extension Accessory {
         }
         
         private let neoLightBulbService: Service.NeoLightbulbService!
-        var colorMode: ColorMode {
+        
+        private var colorMode: ColorMode {
             get{
                 if(previous4Colors[0] == previous4Colors[2] &&
                     previous4Colors[1] == previous4Colors[3] &&
@@ -87,7 +88,6 @@ extension Accessory {
                 self.neoLightBulbService.hue?.value = newValue
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
-                print("Hue")
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
@@ -99,7 +99,6 @@ extension Accessory {
             set {
                 
                 self.neoLightBulbService.saturation?.value = newValue
-                print("Sat")
                 //self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
@@ -122,7 +121,6 @@ extension Accessory {
                     
                     previous4Colors[i] = updatedColor
                 }
-                 print("Brightness")
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
@@ -135,8 +133,6 @@ extension Accessory {
                 
                 self.neoLightBulbService.powerState.value = newValue
                 ChangeDeviceState(state: newValue!)
-                print("State")
-                
             }
         }
         
@@ -158,8 +154,6 @@ extension Accessory {
         }
         
         private func ChangeDeviceState(state:Bool){
-            print("ChangeDeviceState: \(state)")
-            print("ChangeDeviceState-Mode: \(String(describing: colorMode))")
             if(state){
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -172,17 +166,13 @@ extension Accessory {
         
         /// Manages color change if should be single or multi
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
-            print("Apply Color Change: \(NeoColor.PrintRGBandHSV(color))")
             if( self.colorMode == .single ){
-                print("ApplyColorChange: isSingle")
                 self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
             }
             else{
                 // Multi Color
-                print("ApplyColorChange: isMulti")
                 ColorFlash(color: NeoColor.white, completion: {
-                    print("In the Completion handler - Color flash completed - should cycle now")
                     self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                     self.StartCycleColor(color1: self.previous4Colors[3], color2: self.previous4Colors[2], withTimeInterval: 1)
                 })
@@ -212,7 +202,6 @@ extension Accessory {
             let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true)
             { (Timer) in
                 
-                print("ColorFlashCounter: \(counter)")
                 if(counter % 2 == 0){
                     self.SetAllPixelsToSingle(color: (color == nil) ? NeoColor.randomColor : color!,
                                               shouldWait: true)
@@ -240,7 +229,6 @@ extension Accessory {
         /// Call this function to stop the color cycle timer.
         private func StopCycleColor()
         {
-            print("StopCycleColor")
             if(self.cycleColorTimer == nil) {return}
             if(self.cycleColorTimer!.isValid)
             {
@@ -260,7 +248,6 @@ extension Accessory {
         ///   - withTimeInterval: time in seconds to repete the timer
         private func StartCycleColor(color1: NeoColor, color2: NeoColor, withTimeInterval: TimeInterval)
         {
-            print("StartCycleColor")
             var newCycleColor  = color1
             var startColor  = color1
             var endColor    = color2
@@ -302,8 +289,6 @@ extension Accessory {
                     colorIncrimentSummation = (colorIncrimentSummation + incColor)! // We keep adding our incColor (1 -Step) at a time to the start color resulting in a new step color each iteration
                     
                     self.SetAllPixelsToSingle(color: newCycleColor, shouldWait: true)
-                    
-                    print("ColorCycle NewColor: \(newCycleColor.CombinedUInt32)")
                     
                     if(newCycleColor == endColor){
                         swap(&startColor, &endColor)
