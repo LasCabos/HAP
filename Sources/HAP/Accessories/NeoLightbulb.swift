@@ -138,6 +138,8 @@ extension Accessory {
         }
         
         private func ChangeDeviceState(state:Bool){
+            print("ChangeDeviceState: \(state)")
+            print("ChangeDeviceState-Mode: \(String(describing: colorMode))")
             if(state){
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
