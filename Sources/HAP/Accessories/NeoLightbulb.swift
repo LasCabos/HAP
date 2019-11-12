@@ -184,6 +184,7 @@ extension Accessory {
         func ColorFlash(color: NeoColor?, completion: @escaping () -> ())
         {
             var counter = 0
+            
             let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true)
             {
                 (Timer) in
@@ -193,8 +194,8 @@ extension Accessory {
                 counter += 1
                 if(counter > 2)
                 {
-                    Timer.invalidate()
                     completion()
+                    Timer.invalidate()
                 }
             }
         }
