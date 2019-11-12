@@ -152,13 +152,15 @@ extension Accessory {
         
         /// Manages color change if should be single or multi
         private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
-            
+            print("Apply Color Change: \(NeoColor.PrintRGBandHSV(color))")
             if( self.colorMode == .single ){
+                print("ApplyColorChange: isSingle")
                 self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
             }
             else{
                 // Multi Color
+                print("ApplyColorChange: isMulti")
                 ColorFlash(color: NeoColor.white, completion: {
                     print("In the Completion handler - Color flash completed - should cycle now")
                     self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
@@ -233,6 +235,7 @@ extension Accessory {
         /// Call this function to stop the color cycle timer.
         private func StopCycleColor()
         {
+            print("StopCycleColor")
             if(self.cycleColorTimer == nil) {return}
             if(self.cycleColorTimer!.isValid)
             {
@@ -252,6 +255,7 @@ extension Accessory {
         ///   - withTimeInterval: time in seconds to repete the timer
         private func StartCycleColor(color1: NeoColor, color2: NeoColor, withTimeInterval: TimeInterval)
         {
+            print("StartCycleColor")
             var newCycleColor  = color1
             var startColor  = color1
             var endColor    = color2
