@@ -25,7 +25,22 @@ extension Accessory {
         }
         
         private let neoLightBulbService: Service.NeoLightbulbService!
-        private var colorMode: ColorMode!
+        var colorMode: ColorMode {
+            get{
+                if(previous4Colors[0] == previous4Colors[2] &&
+                    previous4Colors[1] == previous4Colors[3] &&
+                    previous4Colors[0] != NeoColor.black &&
+                    previous4Colors[1] != NeoColor.black &&
+                    previous4Colors[2] != NeoColor.black &&
+                    previous4Colors[3] != NeoColor.black)
+                {
+                    return .multi
+                }
+                else{
+                    return .single
+                }
+            }
+        }
         private var numLEDs: Int!
         private var cycleTime: Int = 5 // Cycle time from one color to the next
         private var ws281x: WS281x!
@@ -52,7 +67,6 @@ extension Accessory {
             self.ws281x = WS281x(gpio, type: .WS2812B, numElements: self.numLEDs)
 
             neoLightBulbService = Service.NeoLightbulbService(type: type, isDimmable: isDimmable)
-            colorMode = .single
             super.init(info: info, type: .lightbulb, services: [neoLightBulbService] + additionalServices)
             
             // This is used as the startup color... i think.
@@ -72,7 +86,6 @@ extension Accessory {
                 self.neoLightBulbService.hue?.value = newValue
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
-                ValidateColorCycle()
                 print("Hue")
                 self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
@@ -215,21 +228,6 @@ extension Accessory {
                 counter += 1
             }
         }
-        
-        
-        
-        /// Determines if we should be in color cycle mode. ColorCycle Mode is valid if the user
-        /// enters color1, color2, color1, color2. The cycle should begin
-        private func ValidateColorCycle()
-        {
-            if(previous4Colors[0] == previous4Colors[2] &&
-                previous4Colors[1] == previous4Colors[3])
-            {
-                self.colorMode = .multi
-            }
-            else{self.colorMode = .single}
-        }
-        
         
         private func UpdatePreviousColorArray(withNewColor: NeoColor)
         {
