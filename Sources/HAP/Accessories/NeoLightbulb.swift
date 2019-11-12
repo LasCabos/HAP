@@ -135,6 +135,7 @@ extension Accessory {
                 return self.neoLightBulbService.powerState.value
             }
             set {
+                print("Service: \(self.neoLightBulbService.powerState.value)    newValue:\(newValue)")
                 // Lets only update changes to state if its different
                 if(newValue != self.neoLightBulbService.powerState.value){
                     self.neoLightBulbService.powerState.value = newValue
