@@ -77,6 +77,11 @@ extension Accessory {
             self.brightness = 100
         }
         
+        // MARK: - HAP Protocol
+        // Color Change - Sat, Hue
+        // Temperature  - Sat, Hue
+        // Brightness   - State, Brightness
+        // Power        - State
         
         // MARK: - Return Functions
         public var hue: Float? {
@@ -130,9 +135,11 @@ extension Accessory {
                 return self.neoLightBulbService.powerState.value
             }
             set {
-                
-                self.neoLightBulbService.powerState.value = newValue
-                ChangeDeviceState(state: newValue!)
+                // Lets only update changes to state if its different
+                if(newValue != self.neoLightBulbService.powerState.value){
+                    self.neoLightBulbService.powerState.value = newValue
+                    ChangeDeviceState(state: newValue!)
+                }
             }
         }
         
@@ -154,6 +161,7 @@ extension Accessory {
         }
         
         private func ChangeDeviceState(state:Bool){
+            
             if(state){
                 self.ApplyColorChange(color: self.currentColor, shouldFlashIfRequired: true, shouldWait: true)
             }
