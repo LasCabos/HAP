@@ -186,17 +186,23 @@ extension Accessory {
             var counter = 0
             
             let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true)
-            {
-                (Timer) in
+            { (Timer) in
+                
                 print("ColorFlashCounter: \(counter)")
-                self.SetAllPixelsToSingle(color: (color == nil) ? NeoColor.randomColor : color!,
-                                          shouldWait: true)
-                counter += 1
+                if(counter % 2 == 0){
+                    self.SetAllPixelsToSingle(color: (color == nil) ? NeoColor.randomColor : color!,
+                                              shouldWait: true)
+                }
+                else{
+                    self.SetAllPixelsToSingle(color: NeoColor.black, shouldWait: true)
+                }
+                
                 if(counter > 2)
                 {
                     completion()
                     Timer.invalidate()
                 }
+                counter += 1
             }
         }
         
