@@ -160,7 +160,7 @@ extension Accessory {
                 ColorFlash(color: NeoColor.white, completion: {
                     print("In the Completion handler - Color flash completed - should cycle now")
                     self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
-                    self.StartCycleColor(color1: self.previous4Colors[2], color2: self.previous4Colors[3], withTimeInterval: 1)
+                    self.StartCycleColor(color1: self.previous4Colors[3], color2: self.previous4Colors[2], withTimeInterval: 1)
                 })
             }
         }
