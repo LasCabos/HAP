@@ -69,7 +69,8 @@ extension Accessory {
             neoLightBulbService = Service.NeoLightbulbService(type: type, isDimmable: isDimmable)
             super.init(info: info, type: .lightbulb, services: [neoLightBulbService] + additionalServices)
             
-            // This is used as the startup color... i think.
+            // Lets startup in red
+            self.state = true
             self.hue = 360
             self.saturation = 100
             self.brightness = 100
