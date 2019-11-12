@@ -88,7 +88,7 @@ extension Accessory {
                 self.neoLightBulbService.hue?.value = newValue
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
-                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldFlashIfRequired: true, shouldWait: true)
             }
         }
         
@@ -121,7 +121,7 @@ extension Accessory {
                     
                     previous4Colors[i] = updatedColor
                 }
-                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldFlashIfRequired: false, shouldWait: true)
             }
         }
         
@@ -155,7 +155,7 @@ extension Accessory {
         
         private func ChangeDeviceState(state:Bool){
             if(state){
-                self.ApplyColorChange(color: self.currentColor, shouldWait: true)
+                self.ApplyColorChange(color: self.currentColor, shouldFlashIfRequired: true, shouldWait: true)
             }
             else{
                 StopCycleColor()
@@ -165,17 +165,26 @@ extension Accessory {
         
         
         /// Manages color change if should be single or multi
-        private func ApplyColorChange(color: NeoColor, shouldWait: Bool){
+        /// shouldFlashIfRequired - If multi color cycle mode we dont want to flash white for brightness changes
+        private func ApplyColorChange(color: NeoColor, shouldFlashIfRequired: Bool, shouldWait: Bool){
             if( self.colorMode == .single ){
                 self.StopCycleColor()
                 self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
             }
             else{
-                // Multi Color
-                ColorFlash(color: NeoColor.white, completion: {
+                if(shouldFlashIfRequired)
+                {
+                    ColorFlash(color: NeoColor.white, completion: {
+                        self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
+                        self.StartCycleColor(color1: self.previous4Colors[3], color2: self.previous4Colors[2], withTimeInterval: 1)
+                    })
+                }
+                else{
                     self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                     self.StartCycleColor(color1: self.previous4Colors[3], color2: self.previous4Colors[2], withTimeInterval: 1)
-                })
+                }
+                // Multi Color
+                
             }
         }
         
