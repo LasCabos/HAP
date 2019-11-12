@@ -197,7 +197,7 @@ extension Accessory {
                     self.SetAllPixelsToSingle(color: NeoColor.black, shouldWait: true)
                 }
                 
-                if(counter > 2)
+                if(counter > 3)
                 {
                     completion()
                     Timer.invalidate()
