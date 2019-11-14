@@ -50,6 +50,7 @@ extension Accessory {
         private var cycleColorTimer: Timer?
         private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
         private var remoteESP8266 = UDPClient(esp8266IpAddress: "192.168.2.17", port: 8080)
+        private var remoteESP8266s:[UDPClient] = [UDPClient(esp8266IpAddress: "192.168.2.17", port: 8080)]
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
@@ -95,7 +96,6 @@ extension Accessory {
                 
                 UpdatePreviousColorArray(withNewColor: self.currentColor)
                 self.ApplyColorChange(color: self.currentColor, shouldFlashIfRequired: true, shouldWait: true)
-                remoteESP8266.udpSend(textToSend: "New color")
             }
         }
         
@@ -106,7 +106,6 @@ extension Accessory {
             set {
                 
                 self.neoLightBulbService.saturation?.value = newValue
-                //self.ApplyColorChange(color: self.currentColor, shouldWait: true)
             }
         }
         
@@ -206,6 +205,7 @@ extension Accessory {
             self.ws281x.setLeds(initial)
             ws281x.start()
             if(shouldWait){ws281x.wait()} // Blocking
+            SendColorToAllRemoteDevices(color: color)
         }
         
         
@@ -320,6 +320,19 @@ extension Accessory {
             {
                 StopCycleColor()
                 RunTimer(withInterval: withTimeInterval)
+            }
+        }
+        
+        /// Sends color to all remote ESP8266 Devices
+        /// The color will be converted to a uint32 before being passed over UDP
+        ///
+        /// - Parameters:
+        ///     - color: The color you wish to send
+        private func SendColorToAllRemoteDevices(color: NeoColor){
+            if(remoteESP8266s.isEmpty){return}
+            
+            for remoteDevice in remoteESP8266s{
+                remoteDevice.udpSend(textToSend: String(color.CombinedUInt32))
             }
         }
     }
