@@ -98,7 +98,7 @@ func GenerateConfigModelWithCMDQuestions() -> ConfigurationModel
 
 // MARK: - ESP8266 / HUZZAH UDP Client
 
-class UDPClient{
+struct UDPClient{
     
     private var serverIp:String!
     private var port:Int
