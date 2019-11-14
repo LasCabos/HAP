@@ -49,7 +49,6 @@ extension Accessory {
         
         private var cycleColorTimer: Timer?
         private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
-        
         private var remoteESP8266 = UDPClient(esp8266IpAddress: "192.168.2.46", port: 8080)
         
         // Default Lightbulb is a simple monochrome bulb
