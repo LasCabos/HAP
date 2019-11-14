@@ -95,3 +95,52 @@ func GenerateConfigModelWithCMDQuestions() -> ConfigurationModel
 }
 
 
+// MARK: - ESP8266 / HUZZAH UDP Client
+
+class UDPClient{
+    
+    private var serverIp:String!
+    private var port:Int
+    private var inaddr = in_addr()
+    private var add:Int32!
+    
+    init(esp8266IpAddress: String, port: Int) {
+        self.serverIp = esp8266IpAddress
+        self.port = port
+        add = inet_aton(esp8266IpAddress, &inaddr)
+    }
+    
+    public func udpSend(textToSend:String)
+    {
+        self.udpSend(textToSend: textToSend, address: self.inaddr, port: CUnsignedShort(port))
+    }
+    
+    private func udpSend(textToSend: String, address: in_addr, port: CUnsignedShort) {
+        
+        func htons(value: CUnsignedShort) -> CUnsignedShort {
+            return (value << 8) + (value >> 8);
+        }
+        
+        let addr = sockaddr_in(
+            sin_family: sa_family_t(2),
+            sin_port:   htons(value: port),
+            sin_addr:   address,
+            sin_zero:   ( 0, 0, 0, 0, 0, 0, 0, 0 )
+        )
+        
+        let sent = textToSend.withCString { cstr -> Int in
+            
+            var localCopy = addr
+            
+            let sent = withUnsafePointer(to: &localCopy) { pointer -> Int in
+                let memory = UnsafeRawPointer(pointer).bindMemory(to: sockaddr.self, capacity: 1)
+                let sent = sendto(fd, cstr, strlen(cstr), 0, memory, socklen_t(__uint8_t(MemoryLayout<sockaddr_in>.size)))
+                return sent
+            }
+            
+            return sent
+        }
+        
+        //close(fd)
+    }
+}
