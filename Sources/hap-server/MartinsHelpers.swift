@@ -23,7 +23,7 @@ struct ConfigurationModel: Codable{
         case numLEDs = "--numLEDs"
         case boardType = "--boardType"
         case cycleTime = "--cycleTime"
-        case remotes = "--remotes"
+        case remoteESP8266s = "--remoteESP8266s"
         case recreate = "recreate"
     }
     

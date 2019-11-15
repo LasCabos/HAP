@@ -675,6 +675,7 @@ public class UDPClient{
     private var inaddr = in_addr()
     private var add:Int32!
     private var fd = socket(2, 2, 0) // DGRAM makes it UDP
+    //let fd = socket(AF_INET, SOCK_DGRAM, 0) // DGRAM makes it UDP
     
     init(esp8266IpAddress: String, port: Int) {
         self.serverIp = esp8266IpAddress
