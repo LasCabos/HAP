@@ -15,6 +15,7 @@ struct ConfigurationModel: Codable{
     var numLEDs:Int?
     var boardType: SupportedBoard?
     var cycleTime: Int?
+    var remoteESP8266s: [String]?
     var recreate: Bool = false
     
     enum CodingKeys: String, CodingKey{
@@ -22,6 +23,7 @@ struct ConfigurationModel: Codable{
         case numLEDs = "--numLEDs"
         case boardType = "--boardType"
         case cycleTime = "--cycleTime"
+        case remotes = "--remotes"
         case recreate = "recreate"
     }
     
@@ -80,16 +82,33 @@ func GenerateConfigModelWithCMDQuestions() -> ConfigurationModel
     var numLEDs:Int?
     var deviceType: SupportedBoard?
     var colorCycleTime: Int?
+    var remoteESP8266s:[String]?
     
     while(deviceName == nil || deviceName!.isEmpty){deviceName = AskQuestion(question: "Enter Device Name")}
     while(numLEDs == nil){numLEDs = Int(AskQuestion(question: "Number Of LEDs")!)}
     while(deviceType == nil){deviceType = SupportedBoard(rawValue: AskQuestion(question: "Device Type (RaspberryPi3, RaspberryPiPlusZero)")!)}
     while(colorCycleTime == nil){colorCycleTime = Int(AskQuestion(question: "Full color cycle time in minutes")!)}
+    while(remoteESP8266s == nil){
+        let commaSeparatedString = AskQuestion(question: "Enter IP Adresses for any ESP8266 remote devices. Leave blank if there are no remote devices.\nExample: 192.168.2.55,192.168.2.63,...")
+        
+        let trimmed = commaSeparatedString?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let components = trimmed?.components(separatedBy: ",")
+        
+        if(commaSeparatedString!.isEmpty || components!.isEmpty || trimmed?.isEmpty ||
+            commaSeparatedString == nil || components == nil || trimmed == nil){
+            
+            remoteESP8266s = [String]()
+        }
+        else{
+            remoteESP8266s = components
+        }
+    }
     
     let configModel = ConfigurationModel(name: deviceName!,
                                          numLEDs: numLEDs!,
                                          boardType: deviceType!,
                                          cycleTime: colorCycleTime!,
+                                         remoteESP8266s: remoteESP8266s!,
                                          recreate: false)
     
     return configModel
