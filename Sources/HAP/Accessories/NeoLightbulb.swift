@@ -49,8 +49,7 @@ extension Accessory {
         
         private var cycleColorTimer: Timer?
         private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
-        private var remoteESP8266 = UDPClient(esp8266IpAddress: "192.168.2.17", port: 8080)
-        private var remoteESP8266s:[UDPClient] = [UDPClient(esp8266IpAddress: "192.168.2.17", port: 8080)]
+        private var remoteESP8266s:[UDPClient] = [UDPClient(esp8266IpAddress: "192.168.2.46", port: 8080)]
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
@@ -58,12 +57,15 @@ extension Accessory {
                     boardType: SupportedBoard,
                     numberOfLEDs: Int,
                     cycleTime: Int,
+                    remoteESP8266s: [UDPClient],
                     type: ColorType = .color,
                     isDimmable: Bool = true)
         {
             
             self.numLEDs = numberOfLEDs
             self.cycleTime = cycleTime
+            
+            //self.remoteESP8266s = remoteESP8266s
             
             let pwms = SwiftyGPIO.hardwarePWMs(for: boardType)!
             let gpio = (pwms[0]?[.P18])!
@@ -666,7 +668,7 @@ struct HSV {
 
 // MARK: - ESP8266 / HUZZAH UDP Client
 
-class UDPClient{
+public class UDPClient{
     
     private var serverIp:String!
     private var port:Int
