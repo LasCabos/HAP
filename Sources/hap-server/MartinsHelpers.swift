@@ -94,8 +94,8 @@ func GenerateConfigModelWithCMDQuestions() -> ConfigurationModel
         let trimmed = commaSeparatedString?.trimmingCharacters(in: .whitespacesAndNewlines)
         let components = trimmed?.components(separatedBy: ",")
         
-        if(commaSeparatedString!.isEmpty || components!.isEmpty || trimmed?.isEmpty ||
-            commaSeparatedString == nil || components == nil || trimmed == nil){
+        if(commaSeparatedString == nil || components == nil || trimmed == nil ||
+            commaSeparatedString!.isEmpty || components!.isEmpty || trimmed!.isEmpty){
             
             remoteESP8266s = [String]()
         }

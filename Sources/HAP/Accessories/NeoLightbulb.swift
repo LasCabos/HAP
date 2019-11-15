@@ -49,7 +49,7 @@ extension Accessory {
         
         private var cycleColorTimer: Timer?
         private var previous4Colors = [NeoColor.red, NeoColor.green, NeoColor.blue, NeoColor.white] // This keeps track of the previous 4 colors for color cycle. To enable color cycle you must send command color1, color2, color1, color2
-        private var remoteESP8266s:[UDPClient] = [UDPClient(esp8266IpAddress: "192.168.2.46", port: 8080)]
+        private var remoteESP8266s = [UDPClient]()
         
         // Default Lightbulb is a simple monochrome bulb
         public init(info: Service.Info,
@@ -57,7 +57,7 @@ extension Accessory {
                     boardType: SupportedBoard,
                     numberOfLEDs: Int,
                     cycleTime: Int,
-                    remoteESP8266s: [UDPClient],
+                    remoteESP8266IpAddresses: [String],
                     type: ColorType = .color,
                     isDimmable: Bool = true)
         {
@@ -65,7 +65,9 @@ extension Accessory {
             self.numLEDs = numberOfLEDs
             self.cycleTime = cycleTime
             
-            //self.remoteESP8266s = remoteESP8266s
+            for address in remoteESP8266IpAddresses{
+                self.remoteESP8266s.append(UDPClient(esp8266IpAddress: address))
+            }
             
             let pwms = SwiftyGPIO.hardwarePWMs(for: boardType)!
             let gpio = (pwms[0]?[.P18])!
@@ -677,7 +679,7 @@ public class UDPClient{
     private var fd = socket(2, 2, 0) // DGRAM makes it UDP
     //let fd = socket(AF_INET, SOCK_DGRAM, 0) // DGRAM makes it UDP
     
-    init(esp8266IpAddress: String, port: Int) {
+    init(esp8266IpAddress: String, port: Int = 8080) {
         self.serverIp = esp8266IpAddress
         self.port = port
         add = inet_aton(esp8266IpAddress, &inaddr)

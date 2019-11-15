@@ -70,7 +70,7 @@ let neoLightbulb = Accessory.NeoLightbulb(info: Service.Info(name: configModel.n
                                           boardType: configModel.boardType!,
                                           numberOfLEDs: configModel.numLEDs!,
                                           cycleTime: configModel.cycleTime!,
-                                          remoteESP8266s: [UDPClient]())
+                                          remoteESP8266IpAddresses: configModel.remoteESP8266s!)
 
 let device = Device(
     bridgeInfo: Service.Info(name: bridgeName, serialNumber: bridgeSerialNumber),
