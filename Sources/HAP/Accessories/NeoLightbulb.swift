@@ -184,7 +184,7 @@ extension Accessory {
             else{
                 if(shouldFlashIfRequired)
                 {
-                    ColorFlash(color: NeoColor.white, completion: {
+                    ColorFlash(color: NeoColor.red, completion: {
                         self.SetAllPixelsToSingle(color: color, shouldWait: shouldWait)
                         self.StartCycleColor(color1: self.previous4Colors[3], color2: self.previous4Colors[2], withTimeInterval: 1)
                     })
